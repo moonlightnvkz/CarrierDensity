@@ -19,6 +19,47 @@ Here you can find the [task]
   
   - [Golang Qt examples]
   - [Qt documentation]
+
+
+# Deployment
+
+## Linux to Linux
+
+```sh
+qtdeploy build desktop
+```
+
+You should find your deployed application inside the deploy subfolder.
+
+Please use the \*.sh file to start your application.
+
+## Linux to Windows 32 bit Shared
+
+- optional: Install Wine if you want to test your Windows application on Linux
+
+- Pull the target image
+
+```sh
+docker pull therecipe/qt:windows_32_shared
+```
+
+- Deploy your application
+
+```sh
+qtdeploy -docker build windows_32_shared
+```
+
+You should find your deployed application inside the deploy subfolder.
+
+## Windows to Windows 32 bit Shared
+
+```sh
+qtdeploy build desktop
+```
+
+You should find your deployed application inside the deploy subfolder.
+
+
 ### Todos
 
  - Add Makefile
