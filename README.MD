@@ -12,10 +12,13 @@ Here you can find the [task]
 # Useful links
   - [GitHub Getting Started]
   - [GitHub Forking Projects]
+  
   - [An Introduction to Programming in Go] (или на [русском](http://golang-book.ru/))
   - [Golang code-style tips]
   - An introduction to [Golang code organization]
-
+  
+  - [Golang Qt examples]
+  - [Qt documentation]
 ### Todos
 
  - Add Makefile
@@ -32,3 +35,5 @@ Here you can find the [task]
    [Golang code organization]: <https://golang.org/doc/code.html>
    [GitHub Getting Started]: <https://guides.github.com/activities/hello-world/>
    [GitHub Forking Projects]: <https://guides.github.com/activities/forking/>
+   [Golang Qt examples]: <https://github.com/therecipe/examples>
+   [Qt documentation]: <https://doc.qt.io/qt-5.11/>
