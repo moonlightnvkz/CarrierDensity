@@ -8,8 +8,12 @@ Here you can find the [task]
 
   - Install [Golang]
   - Install [Qt bindings for Golang] (tip: you need Qt 5.11.1 installed)
-  - Read [An Introduction to Programming in Go] (или на [русском](http://golang-book.ru/))
-  - Have a look at [code-style tips]
+
+# Useful links
+  - [GitHub Getting Started]
+  - [GitHub Forking Projects]
+  - [An Introduction to Programming in Go] (или на [русском](http://golang-book.ru/))
+  - [Golang code-style tips]
   - An introduction to [Golang code organization]
 
 ### Todos
@@ -24,5 +28,7 @@ Here you can find the [task]
    [Golang]: <https://golang.org/doc/install>
    [Qt bindings for Golang]: <https://github.com/therecipe/qt>
    [An Introduction to Programming in Go]: <https://www.golang-book.com/books/intro>
-   [code-style tips]: <https://golang.org/doc/effective_go.html>
+   [Golang code-style tips]: <https://golang.org/doc/effective_go.html>
    [Golang code organization]: <https://golang.org/doc/code.html>
+   [GitHub Getting Started]: <https://guides.github.com/activities/hello-world/>
+   [GitHub Forking Projects]: <https://guides.github.com/activities/forking/>
