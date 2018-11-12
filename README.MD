@@ -67,7 +67,7 @@ You should find your deployed application inside the deploy subfolder.
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
 
-   [task]: <https://github.com/moonlightnvkz/carrierconcentration/task.pdf>
+   [task]: <https://github.com/moonlightnvkz/CarrierDensity/blob/master/task.pdf>
    [Golang]: <https://golang.org/doc/install>
    [Qt bindings for Golang]: <https://github.com/therecipe/qt>
    [An Introduction to Programming in Go]: <https://www.golang-book.com/books/intro>
