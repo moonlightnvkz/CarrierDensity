@@ -9,7 +9,7 @@ full:
 	$(DEPLOY) build desktop
 
 run: 
-	$(DEPLOY) run desktop
+	./deploy/linux/carrierdensity
 
 test:
 	$(DEPLOY) test desktop
