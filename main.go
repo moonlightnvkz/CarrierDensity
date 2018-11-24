@@ -2,6 +2,8 @@ package main
 
 import (
 	"os"
+	"github.com/moonlightnvkz/CarrierDensity/formula"
+	//"/formula"
 
 	// "github.com/therecipe/qt/charts"
 	"github.com/therecipe/qt/core"
@@ -23,6 +25,9 @@ func main() {
 	view.SetResizeMode(quick.QQuickView__SizeRootObjectToView)
 	view.SetSource(core.NewQUrl3("qrc:/qml/main.qml", 0))
 	view.Show()
+   
+    var sigma float64 = formula.FindConductivity()
+	fmt.Println(sigma)
 
 	// series := charts.NewQLineSeriesFromPointer(view.RootObject().FindChild("series", core.Qt__FindChildrenRecursively).Pointer())
 
