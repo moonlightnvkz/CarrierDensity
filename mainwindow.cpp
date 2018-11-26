@@ -1,4 +1,5 @@
 #include <QLineSeries>
+#include <QColor>
 #include <QChart>
 #include <QChartView>
 #include <QSizePolicy>
@@ -24,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     chartView = new QChartView(this);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    QChart *chart = new QChart();
+    chart->legend()->hide();
+    chartView->setChart(chart);
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
 
     ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
@@ -84,25 +88,61 @@ void MainWindow::validateTemperatureRange()
         ui->tempTo->setText(ui->tempFrom->text());
     }
 
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::updateChart()
 {
-    QLineSeries *series = new QLineSeries(this);
-    series->append(0, 6);
-    series->append(2, 4);
-    series->append(3, 8);
-    series->append(7, 4);
-    series->append(10, 5);
-    QStringList colors = QColor::colorNames();
-    series->setColor(colors[static_cast<int>(chartState) % colors.size()]);
-    QChart *chart = new QChart();
-    chart->legend()->hide();
-    chart->addSeries(series);
+    assert(chartView && chartView->chart() && chartView->chart()->series().size() == 7);
+    qDebug() << static_cast<int>(chartState);
+
+    QChart * chart = chartView->chart();
+    auto list = chart->series();
+    for (auto *series : list) {
+        series->hide();
+    }
+
+    QLineSeries *visible = static_cast<QLineSeries*>(list[static_cast<int>(chartState)]);
+    visible->show();
+
+    double min = std::numeric_limits<double>::max();
+    double max = -std::numeric_limits<double>::max();
+    for (QPointF point : visible->points()) {
+        if (point.y() > max) max = point.y();
+        if (point.y() < min) min = point.y();
+    }
+    chart->axisY()->setRange(min, max);
+}
+
+void MainWindow::recalculateData()
+{
+    assert(chartView && chartView->chart());
+    const std::vector<double> &temperature = Controller::GetInstance().GetTemperature();
+
+    // !NB: order must be the same as in the enum
+    const std::vector<double> *data[] = { &Controller::GetInstance().GetElectronsConcentration(),
+                                          &Controller::GetInstance().GetHolesConcentration(),
+                                          &Controller::GetInstance().GetDonorsConcentration(),
+                                          &Controller::GetInstance().GetAcceptorsConcentration(),
+                                          &Controller::GetInstance().GetElectronsMobility(),
+                                          &Controller::GetInstance().GetHolesMobility(),
+                                          &Controller::GetInstance().GetConductivity() };
+    QChart * chart = chartView->chart();
+    chart->removeAllSeries();
+    for (const auto *datum : data) {
+        assert(datum->size() == temperature.size());
+        QLineSeries *series = new QLineSeries(chart);
+        for (size_t i = 0; i < temperature.size(); ++i) {
+            series->append(temperature[i], datum->at(i));
+        }
+        series->setColor(QColor(0, 0, 255));
+//        series->hide();
+        chart->addSeries(series);
+    }
+
     chart->createDefaultAxes();
-    chart->setTitle("Simple line chart example");
-    chartView->setChart(chart);
+
+    updateChart();
 }
 
 // load
@@ -113,7 +153,7 @@ void MainWindow::on_action_ASCII_2_triggered()
     std::ifstream is(filename.toStdString());
 
     if (Controller::GetInstance().LoadFromASCII(is)) {
-        updateChart();
+        recalculateData();
     } else {
         QMessageBox msgBox;
         msgBox.setText("Не удалось загрузить ASII файл :(");
@@ -140,7 +180,9 @@ void MainWindow::on_action_2_triggered()
     QString filename = QFileDialog::getSaveFileName(this, tr("Сохранить в ASCII"), "./", tr("Text files (*.txt)"));
 
     std::ifstream is(filename.toStdString());
-    if (!Controller::GetInstance().LoadMobility(is)) {
+    if (Controller::GetInstance().LoadMobility(is)) {
+        recalculateData();
+    } else {
         QMessageBox msgBox;
         msgBox.setText("Не удалось загрузить подвижность :(");
         msgBox.exec();
@@ -150,41 +192,41 @@ void MainWindow::on_action_2_triggered()
 void MainWindow::on_action_3_triggered()
 {
     chartState = ChartState::ElectronsConcentration;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_4_triggered()
 {
     chartState = ChartState::HolesConcentration;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_5_triggered()
 {
     chartState = ChartState::DonorsConcentration;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_6_triggered()
 {
     chartState = ChartState::AcceptorsConcentration;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_7_triggered()
 {
     chartState = ChartState::ElectronsMobility;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_8_triggered()
 {
     chartState = ChartState::HolesMobility;
-    updateChart();
+    recalculateData();
 }
 
 void MainWindow::on_action_9_triggered()
 {
     chartState = ChartState::Conductivity;
-    updateChart();
+    recalculateData();
 }

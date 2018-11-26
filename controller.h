@@ -14,8 +14,27 @@ public:
     bool SaveToASCII(std::ostream &os);
 
     bool LoadMobility(std::istream &is);
+
+    void Recalculate();
+
+    const std::vector<double> &GetTemperature();
+
+    const std::vector<double> &GetElectronsConcentration();
+
+    const std::vector<double> &GetHolesConcentration();
+
+    const std::vector<double> &GetDonorsConcentration();
+
+    const std::vector<double> &GetAcceptorsConcentration();
+
+    const std::vector<double> &GetElectronsMobility();
+
+    const std::vector<double> &GetHolesMobility();
+
+    const std::vector<double> &GetConductivity();
+
 private:
-    Controller() = default;
+    Controller();
 
     Model model;
 };

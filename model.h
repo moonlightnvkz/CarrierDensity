@@ -17,11 +17,13 @@ struct Model {
     double Nd0 = 0;
     double Ea = 0;
     double Na0 = 0;
+    std::vector<double> T;
     std::vector<double> mue;
     std::vector<double> muh;
-    std::vector<double> T;
     std::vector<double> Nc;
     std::vector<double> Nv;
+    std::vector<double> NdPlus;
+    std::vector<double> NaMinus;
     std::vector<double> n;
     std::vector<double> p;
     std::vector<double> sigma;

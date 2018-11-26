@@ -43,13 +43,13 @@ private slots:
 
 private:
     enum class ChartState {
-        ElectronsConcentration,
+        ElectronsConcentration = 0,
         HolesConcentration,
         DonorsConcentration,
         AcceptorsConcentration,
         ElectronsMobility,
         HolesMobility,
-        Conductivity
+        Conductivity,
     };
 
     Ui::MainWindow *ui;
@@ -61,6 +61,8 @@ private:
     void validateTemperatureRange();
 
     void updateChart();
+
+    void recalculateData();
 };
 
 #endif // MAINWINDOW_H
