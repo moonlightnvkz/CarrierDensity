@@ -36,6 +36,14 @@ double Formulas::CalcFermiLevel(double Nc, double Nv, double T, double Na0, doub
 
 }
 
+double Formulas::CalcNdPlus(double T, double Ef, double Eg, double Ed, double Nd0){
+    return Nd0/(1 + exp((Eg - Ed - Ef)/k/T))
+}
+
+double Formulas::CalcNaMinus(double T, double Ef, double Ea, double Na0){
+    return Nda/(1 + exp((Ea - Ef)/k/T))
+}
+
 double Formulas::FindConductivity(double muE, double muP, double T, double Na0, double Nd0, double Eg, double Ea, double Ed) {
     double Nc = CalcEffectiveDensityState(T);
     double Nv = CalcEffectiveDensityState(T);
