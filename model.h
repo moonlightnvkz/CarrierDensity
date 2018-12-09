@@ -17,7 +17,9 @@ struct Model {
     double Nd0 = 0;
     double Ea = 0;
     double Na0 = 0;
+
     std::vector<double> T;
+    // For each T
     std::vector<double> mue;
     std::vector<double> muh;
     std::vector<double> Nc;
@@ -31,8 +33,6 @@ struct Model {
     bool Serialize(std::ostream &os) const;
 
     bool Deserialize(std::istream &is);
-
-    bool LoadMobility(std::istream &is);
 
     void LoadPreset(Preset preset);
 };

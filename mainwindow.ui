@@ -38,7 +38,7 @@
       </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0,0,0">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0">
        <property name="sizeConstraint">
         <enum>QLayout::SetMaximumSize</enum>
        </property>
@@ -95,7 +95,7 @@
          <item>
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>Eg</string>
+            <string>Eg, Дж</string>
            </property>
           </widget>
          </item>
@@ -128,7 +128,7 @@
          <item>
           <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>me</string>
+            <string>me, кг</string>
            </property>
           </widget>
          </item>
@@ -161,78 +161,12 @@
          <item>
           <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>mh</string>
+            <string>mh, кг</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLineEdit" name="mh">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_10">
-         <item>
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Nc</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="nc">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
-         <item>
-          <widget class="QLabel" name="label_12">
-           <property name="text">
-            <string>Nv</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="nv">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -263,7 +197,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Ed</string>
+            <string>Ed, Дж</string>
            </property>
           </widget>
          </item>
@@ -299,7 +233,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Nd0</string>
+            <string>Nd0, м-3</string>
            </property>
           </widget>
          </item>
@@ -335,7 +269,7 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Ea</string>
+            <string>Ea, Дж</string>
            </property>
           </widget>
          </item>
@@ -371,7 +305,7 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Na0</string>
+            <string>Na0, м-3</string>
            </property>
           </widget>
          </item>
@@ -407,7 +341,7 @@
          <item>
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>T</string>
+            <string>T, К</string>
            </property>
           </widget>
          </item>

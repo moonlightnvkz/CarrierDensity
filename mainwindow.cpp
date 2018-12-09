@@ -177,10 +177,7 @@ void MainWindow::on_action_ASCII_triggered()
 // load mobility
 void MainWindow::on_action_2_triggered()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Сохранить в ASCII"), "./", tr("Text files (*.txt)"));
-
-    std::ifstream is(filename.toStdString());
-    if (Controller::GetInstance().LoadMobility(is)) {
+    if (Controller::GetInstance().LoadMobility()) {
         recalculateData();
     } else {
         QMessageBox msgBox;

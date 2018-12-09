@@ -1,4 +1,6 @@
 #include <numeric> // std::iota
+#include <sstream>
+#include <QProcess>
 #include "controller.h"
 
 Controller &Controller::GetInstance()
@@ -17,9 +19,15 @@ bool Controller::SaveToASCII(std::ostream &os)
     return model.Serialize(os);
 }
 
-bool Controller::LoadMobility(std::istream &is)
+bool Controller::LoadMobility()
 {
-    return model.LoadMobility(is);
+    QByteArray mobility;
+    if (!CallMobility({"--mobility"}, mobility)) {
+        return false;
+    } else {
+        std::stringstream ss(mobility.toStdString());
+        return model.LoadMobility(ss);
+    }
 }
 
 // TODO: implement Recalculate
@@ -48,6 +56,22 @@ Controller::Controller()
     model.muh = res;
     std::iota(res.begin(), res.end(), 0);
     model.sigma = res;
+}
+
+bool Controller::CallMobility(QStringList args, QByteArray &data)
+{
+    QProcess process;
+    process.start("mobility.exe", args);
+    process.waitForBytesWritten();
+    process.waitForFinished();
+
+    QByteArray error = process.readAllStandardError();
+    if (error.size() != 0) {
+        return false;
+    } else {
+        data = process.readAllStandardOutput();
+        return true;
+    }
 }
 
 const std::vector<double> &Controller::GetTemperature()

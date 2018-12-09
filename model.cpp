@@ -31,13 +31,6 @@ bool Model::Deserialize(std::istream &is)
     return is.good();
 }
 
-// TODO: implement LoadMobility
-bool Model::LoadMobility(std::istream &is)
-{
-    (void)is;
-    return false;
-}
-
 // TODO: implement LoadPreset
 void Model::LoadPreset(Model::Preset preset)
 {

@@ -29,13 +29,15 @@ SOURCES += \
         mainwindow.cpp \
     doublevalidator.cpp \
     model.cpp \
-    controller.cpp
+    controller.cpp \
+    formulas.cpp
 
 HEADERS += \
         mainwindow.h \
     doublevalidator.h \
     model.h \
-    controller.h
+    controller.h \
+    formulas.h
 
 FORMS += \
         mainwindow.ui

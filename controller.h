@@ -2,6 +2,7 @@
 #define CONTROLLER_H
 #include <memory>
 #include <iosfwd>
+#include <QStringList>
 #include "model.h"
 
 class Controller
@@ -13,7 +14,7 @@ public:
 
     bool SaveToASCII(std::ostream &os);
 
-    bool LoadMobility(std::istream &is);
+    bool LoadMobility();
 
     void Recalculate();
 
@@ -37,6 +38,8 @@ private:
     Controller();
 
     Model model;
+
+    bool CallMobility(QStringList args, QByteArray &data);
 };
 
 #endif // CONTROLLER_H
