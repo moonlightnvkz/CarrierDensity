@@ -31,8 +31,30 @@ bool Model::Deserialize(std::istream &is)
     return is.good();
 }
 
+//https://ru.wikipedia.org/wiki/%D0%AD%D1%84%D1%84%D0%B5%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%81%D0%B0
 // TODO: implement LoadPreset
 void Model::LoadPreset(Model::Preset preset)
 {
-    (void)preset;
+    switch (preset) {
+    case Preset::Ge:
+       Eg = 0.66 * 1.6* 1e-19;
+       me = 0.22;
+       mh = 0.34;
+       break;
+    case Preset::Si:
+       Eg = 1.12 * 1.6* 1e-19;
+       me = 1.08;
+       mh = 0.56;
+       break;
+    case Preset::GaAs:
+       Eg = 1.42 * 1.6* 1e-19;
+       me = 0.067;
+       mh = 0.45;
+    }
+}
+
+
+bool Model::LoadMobility(std::istream &is)
+{
+    return true;
 }

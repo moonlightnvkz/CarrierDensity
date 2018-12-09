@@ -18,6 +18,26 @@ public:
 
     void Recalculate();
 
+    void UpdateT(double from, double to);
+
+    void UpdateMaterial(int idx);
+
+    void UpdateEd(double value);
+
+    void UpdateEa(double value);
+
+    void UpdateNd0(double value);
+
+    void UpdateNa0(double value);
+
+    double GetEd() const;
+
+    double GetNd0() const;
+
+    double GetEa() const;
+
+    double GetNa0() const;
+
     const std::vector<double> &GetTemperature();
 
     const std::vector<double> &GetElectronsConcentration();

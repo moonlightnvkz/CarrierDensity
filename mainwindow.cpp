@@ -14,6 +14,8 @@
 #include "model.h"
 #include "controller.h"
 
+#define READ_AND_VALIDATE(control) control->validator()->locale().toDouble(control->text())
+
 using namespace QtCharts;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -30,26 +32,26 @@ MainWindow::MainWindow(QWidget *parent) :
     chartView->setChart(chart);
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
 
-    ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
+//    ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
     ui->ed->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->ed));
     ui->ea->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->ea));
 
     DoubleValidator *validator;
-    validator = new DoubleValidator(1e-30, 1, 2, ui->me);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->me->setValidator(validator);
+//    validator = new DoubleValidator(1e-30, 1, 2, ui->me);
+//    validator->setNotation(DoubleValidator::ScientificNotation);
+//    ui->me->setValidator(validator);
 
-    validator = new DoubleValidator(1e-30, 1, 2, ui->mh);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->mh->setValidator(validator);
+//    validator = new DoubleValidator(1e-30, 1, 2, ui->mh);
+//    validator->setNotation(DoubleValidator::ScientificNotation);
+//    ui->mh->setValidator(validator);
 
-    validator = new DoubleValidator(0.0, 1e30, 2, ui->nc);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->nc->setValidator(validator);
+//    validator = new DoubleValidator(0.0, 1e30, 2, ui->nc);
+//    validator->setNotation(DoubleValidator::ScientificNotation);
+//    ui->nc->setValidator(validator);
 
-    validator = new DoubleValidator(0.0, 1e30, 2, ui->nv);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->nv->setValidator(validator);
+//    validator = new DoubleValidator(0.0, 1e30, 2, ui->nv);
+//    validator->setNotation(DoubleValidator::ScientificNotation);
+//    ui->nv->setValidator(validator);
 
     validator = new DoubleValidator(0.0, 1e30, 2, ui->nd0);
     validator->setNotation(DoubleValidator::ScientificNotation);
@@ -61,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tempFrom->setValidator(new DoubleValidator(0.0, 1e4, 1, ui->tempFrom));
     ui->tempTo->setValidator(new DoubleValidator(0.0, 1e4, 1, ui->tempTo));
+    on_material_currentIndexChanged(ui->material->currentIndex());
 }
 
 MainWindow::~MainWindow()
@@ -88,6 +91,7 @@ void MainWindow::validateTemperatureRange()
         ui->tempTo->setText(ui->tempFrom->text());
     }
 
+    Controller::GetInstance().UpdateT(from, to);
     recalculateData();
 }
 
@@ -116,6 +120,7 @@ void MainWindow::updateChart()
 
 void MainWindow::recalculateData()
 {
+    Controller::GetInstance().Recalculate();
     assert(chartView && chartView->chart());
     const std::vector<double> &temperature = Controller::GetInstance().GetTemperature();
 
@@ -129,7 +134,8 @@ void MainWindow::recalculateData()
                                           &Controller::GetInstance().GetConductivity() };
     QChart * chart = chartView->chart();
     chart->removeAllSeries();
-    for (const auto *datum : data) {
+    for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); ++i) {
+        const auto *datum = data[i];
         assert(datum->size() == temperature.size());
         QLineSeries *series = new QLineSeries(chart);
         for (size_t i = 0; i < temperature.size(); ++i) {
@@ -225,5 +231,48 @@ void MainWindow::on_action_8_triggered()
 void MainWindow::on_action_9_triggered()
 {
     chartState = ChartState::Conductivity;
+    recalculateData();
+}
+
+void MainWindow::on_material_currentIndexChanged(int index)
+{
+    Controller::GetInstance().UpdateMaterial(index);
+    ui->ed->setText(QString::number(Controller::GetInstance().GetEd()));
+    ui->ea->setText(QString::number(Controller::GetInstance().GetEa()));
+    ui->nd0->setText(QString::number(Controller::GetInstance().GetNd0()));
+    ui->na0->setText(QString::number(Controller::GetInstance().GetNa0()));
+    const auto &temp = Controller::GetInstance().GetTemperature();
+    ui->tempFrom->setText(QString::number(temp[0]));
+    ui->tempTo->setText(QString::number(temp.back()));
+    recalculateData();
+}
+
+void MainWindow::on_ed_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->ed);
+    qDebug() << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << value;
+    Controller::GetInstance().UpdateEd(value);
+    recalculateData();
+}
+
+void MainWindow::on_nd0_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->nd0);
+    Controller::GetInstance().UpdateNd0(value);
+    recalculateData();
+}
+
+void MainWindow::on_ea_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->ea);
+    qDebug() << "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" << value;
+    Controller::GetInstance().UpdateEa(value);
+    recalculateData();
+}
+
+void MainWindow::on_na0_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->na0);
+    Controller::GetInstance().UpdateNa0(value);
     recalculateData();
 }

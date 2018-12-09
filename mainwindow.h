@@ -41,6 +41,16 @@ private slots:
 
     void on_action_9_triggered();
 
+    void on_material_currentIndexChanged(int index);
+
+    void on_ed_editingFinished();
+
+    void on_nd0_editingFinished();
+
+    void on_ea_editingFinished();
+
+    void on_na0_editingFinished();
+
 private:
     enum class ChartState {
         ElectronsConcentration = 0,
