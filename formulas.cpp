@@ -16,32 +16,25 @@ double Formulas::CalcP(double Nv, double Ef, double T){
 }
 
 double Formulas::CalcFermiLevel(double Nc, double Nv, double T, double Na0, double Nd0, double Eg, double Ea, double Ed) {
-    double A = exp(-Eg/k/T);
-    double B = exp(Ea/k/T);
-    double C = exp((Eg - Ed)/k/T);
+    double A = Na0;
     double D = Nd0;
-    double R = Na0;
-    qDebug() << "Nv*B*C " << Nv*B*C;
-    double ln1 = log(Nv*B*C);
-    qDebug() << "Nv*(B+C) " << Nv*(B+C);
-    double ln2 = log(Nv*(B+C));
-    qDebug() << "D*B + Nv - R*C - Nc*A*B*C " << D*B + Nv - R*C - Nc*A*B*C;
-    double ln3 = log(D*B + Nv - R*C - Nc*A*B*C);
-    qDebug() << "D - Nc*A*(B+C) " << D - Nc*A*(B+C);
-    double ln4 = log(D - Nc*A*(B+C));
-    qDebug() << "Nc*A " << Nc*A;
-    double ln5 = log(Nc*A);
+    double C = Nc;
+    double V = Nv;
+    double B = C*exp(Ec/k/T);
+    double K = 4*exp(Ea/k/T);
+    double F = V*exp(-Ec*k*T);
+    double E = 0.5*exp(-Ed/k/T);
     qDebug() << "6";
-    return -(k*T/10)*(ln5 - ln4 - ln3 - ln2 - ln1);
+    return (k*T/4)*(2*log(B) - log(K) - 3*log(F) + log(A) - log(D) + log(B*E + A + F*K - D));
 
 }
 
-double Formulas::CalcNdPlus(double T, double Ef, double Eg, double Ed, double Nd0){
-    return Nd0/(1 + exp((Eg - Ed - Ef)/k/T))
+double Formulas::CalcNdPlus(double T, double Ef, double Ed, double Nd0){
+    return Nd0/(1 + 0.5*exp((Ef- Ed)/k/T))
 }
 
 double Formulas::CalcNaMinus(double T, double Ef, double Ea, double Na0){
-    return Nda/(1 + exp((Ea - Ef)/k/T))
+    return Nda/(1 + 4*exp((Ea - Ef)/k/T))
 }
 
 double Formulas::FindConductivity(double muE, double muP, double T, double Na0, double Nd0, double Eg, double Ea, double Ed) {
