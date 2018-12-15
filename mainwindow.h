@@ -72,7 +72,7 @@ private:
 
     void updateChart();
 
-    void recalculateData();
+    void redraw();
 };
 
 #endif // MAINWINDOW_H

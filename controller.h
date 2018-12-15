@@ -10,6 +10,8 @@ class Controller
 public:
     static Controller &GetInstance();
 
+    static void Init();
+
     bool LoadFromASCII(std::istream &is);
 
     bool SaveToASCII(std::ostream &os);
@@ -58,6 +60,8 @@ private:
     Controller();
 
     Model model;
+
+    bool inited = false;
 
     bool CallMobility(QStringList args, QByteArray &data);
 };

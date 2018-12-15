@@ -5,9 +5,12 @@
 #include <QSizePolicy>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QLogValueAxis>
+#include <QValueAxis>
 #include <fstream>
 #include <memory>
 #include <string>
+#include <cmath>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "doublevalidator.h"
@@ -33,8 +36,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
 
 //    ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
-    ui->ed->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->ed));
-    ui->ea->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->ea));
+    ui->ed->setValidator(new DoubleValidator(-20.0, 20.0, 9, ui->ed));
+    ui->ea->setValidator(new DoubleValidator(-20.0, 20.0, 9, ui->ea));
 
     DoubleValidator *validator;
 //    validator = new DoubleValidator(1e-30, 1, 2, ui->me);
@@ -53,16 +56,16 @@ MainWindow::MainWindow(QWidget *parent) :
 //    validator->setNotation(DoubleValidator::ScientificNotation);
 //    ui->nv->setValidator(validator);
 
-    validator = new DoubleValidator(0.0, 1e30, 2, ui->nd0);
+    validator = new DoubleValidator(0.0, 1e30, 9, ui->nd0);
     validator->setNotation(DoubleValidator::ScientificNotation);
     ui->nd0->setValidator(validator);
 
-    validator = new DoubleValidator(0.0, 1e30, 2, ui->na0);
+    validator = new DoubleValidator(0.0, 1e30, 9, ui->na0);
     validator->setNotation(DoubleValidator::ScientificNotation);
     ui->na0->setValidator(validator);
 
-    ui->tempFrom->setValidator(new DoubleValidator(0.0, 1e4, 1, ui->tempFrom));
-    ui->tempTo->setValidator(new DoubleValidator(0.0, 1e4, 1, ui->tempTo));
+    ui->tempFrom->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempFrom));
+    ui->tempTo->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempTo));
     on_material_currentIndexChanged(ui->material->currentIndex());
 }
 
@@ -92,13 +95,12 @@ void MainWindow::validateTemperatureRange()
     }
 
     Controller::GetInstance().UpdateT(from, to);
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::updateChart()
 {
     assert(chartView && chartView->chart() && chartView->chart()->series().size() == 7);
-    qDebug() << static_cast<int>(chartState);
 
     QChart * chart = chartView->chart();
     auto list = chart->series();
@@ -112,15 +114,19 @@ void MainWindow::updateChart()
     double min = std::numeric_limits<double>::max();
     double max = -std::numeric_limits<double>::max();
     for (QPointF point : visible->points()) {
+        // FIXME: logarithmic axis
         if (point.y() > max) max = point.y();
         if (point.y() < min) min = point.y();
     }
+    if (min < 1) min = 1;
+    visible->attachAxis(chart->axisX());
+    visible->attachAxis(chart->axisY());
     chart->axisY()->setRange(min, max);
+    qDebug() << "Y Range: (" << min << ", " << max << ")";
 }
 
-void MainWindow::recalculateData()
+void MainWindow::redraw()
 {
-    Controller::GetInstance().Recalculate();
     assert(chartView && chartView->chart());
     const std::vector<double> &temperature = Controller::GetInstance().GetTemperature();
 
@@ -146,7 +152,23 @@ void MainWindow::recalculateData()
         chart->addSeries(series);
     }
 
-    chart->createDefaultAxes();
+    QValueAxis *x = new QValueAxis;
+    if (temperature.size() > 0) {
+        x->setRange(temperature[0], temperature.back());
+    }
+    x->setMinorTickCount(-1);
+    x->setTitleText("Температура, К");
+
+    QValueAxis *y = new QValueAxis;
+    y->setMinorTickCount(-1);
+    y->setLabelFormat("%.1g");
+//    y->setBase(10);
+
+    chart->removeAxis(chart->axisX());
+    chart->removeAxis(chart->axisY());
+
+    chart->addAxis(x, Qt::AlignBottom);
+    chart->addAxis(y, Qt::AlignLeft);
 
     updateChart();
 }
@@ -159,7 +181,7 @@ void MainWindow::on_action_ASCII_2_triggered()
     std::ifstream is(filename.toStdString());
 
     if (Controller::GetInstance().LoadFromASCII(is)) {
-        recalculateData();
+        redraw();
     } else {
         QMessageBox msgBox;
         msgBox.setText("Не удалось загрузить ASII файл :(");
@@ -184,7 +206,7 @@ void MainWindow::on_action_ASCII_triggered()
 void MainWindow::on_action_2_triggered()
 {
     if (Controller::GetInstance().LoadMobility()) {
-        recalculateData();
+        redraw();
     } else {
         QMessageBox msgBox;
         msgBox.setText("Не удалось загрузить подвижность :(");
@@ -195,56 +217,59 @@ void MainWindow::on_action_2_triggered()
 void MainWindow::on_action_3_triggered()
 {
     chartState = ChartState::ElectronsConcentration;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_4_triggered()
 {
     chartState = ChartState::HolesConcentration;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_5_triggered()
 {
     chartState = ChartState::DonorsConcentration;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_6_triggered()
 {
     chartState = ChartState::AcceptorsConcentration;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_7_triggered()
 {
     chartState = ChartState::ElectronsMobility;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_8_triggered()
 {
     chartState = ChartState::HolesMobility;
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_action_9_triggered()
 {
     chartState = ChartState::Conductivity;
-    recalculateData();
+    redraw();
 }
+
+#define SET_TEXT_LOCALE(elem, value) ui-> elem ->setText(ui-> elem ->validator()->locale().toString(value))
 
 void MainWindow::on_material_currentIndexChanged(int index)
 {
     Controller::GetInstance().UpdateMaterial(index);
-    ui->ed->setText(QString::number(Controller::GetInstance().GetEd()));
-    ui->ea->setText(QString::number(Controller::GetInstance().GetEa()));
-    ui->nd0->setText(QString::number(Controller::GetInstance().GetNd0()));
-    ui->na0->setText(QString::number(Controller::GetInstance().GetNa0()));
+
+    SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
+    SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
+    SET_TEXT_LOCALE(nd0, Controller::GetInstance().GetNd0());
+    SET_TEXT_LOCALE(na0, Controller::GetInstance().GetNa0());
     const auto &temp = Controller::GetInstance().GetTemperature();
-    ui->tempFrom->setText(QString::number(temp[0]));
-    ui->tempTo->setText(QString::number(temp.back()));
-    recalculateData();
+    SET_TEXT_LOCALE(tempFrom, temp[0]);
+    SET_TEXT_LOCALE(tempTo, temp.back());
+    redraw();
 }
 
 void MainWindow::on_ed_editingFinished()
@@ -252,14 +277,14 @@ void MainWindow::on_ed_editingFinished()
     double value = READ_AND_VALIDATE(ui->ed);
     qDebug() << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << value;
     Controller::GetInstance().UpdateEd(value);
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_nd0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->nd0);
     Controller::GetInstance().UpdateNd0(value);
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_ea_editingFinished()
@@ -267,12 +292,12 @@ void MainWindow::on_ea_editingFinished()
     double value = READ_AND_VALIDATE(ui->ea);
     qDebug() << "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" << value;
     Controller::GetInstance().UpdateEa(value);
-    recalculateData();
+    redraw();
 }
 
 void MainWindow::on_na0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->na0);
     Controller::GetInstance().UpdateNa0(value);
-    recalculateData();
+    redraw();
 }

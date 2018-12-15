@@ -16,8 +16,8 @@ struct Model {
     double mh = 0;
 
     // UI
-    double Ed = 0;
-    double Nd0 = 0;
+    double Ed = 0.647;
+    double Nd0 = 5.5e13;
     double Ea = 0;
     double Na0 = 0;
 

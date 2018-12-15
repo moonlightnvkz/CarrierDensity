@@ -1,6 +1,7 @@
 #include <numeric> // std::iota
 #include <sstream>
 #include <QProcess>
+#include <cmath>
 #include "controller.h"
 #include "formulas.h"
 
@@ -8,6 +9,18 @@ Controller &Controller::GetInstance()
 {
     static Controller instance;
     return instance;
+}
+
+void Controller::Init()
+{
+    Controller &c = Controller::GetInstance();
+    if (c.inited) {
+        return;
+    }
+
+    c.model.T.resize(1000);
+    std::iota(c.model.T.begin(), c.model.T.end(), 1);
+    c.Recalculate();
 }
 
 bool Controller::LoadFromASCII(std::istream &is)
@@ -20,11 +33,22 @@ bool Controller::SaveToASCII(std::ostream &os)
     return model.Serialize(os);
 }
 
-// FIXME: LoadMobility
+static double GetMue(double a, double b, double T, double NdPlus, double NaMinus) {
+    double Tp = pow(T, 1.5);
+    return a / (Tp + b * (NdPlus + NaMinus) / Tp);
+}
+
+// FIXME: LoadMobility: model.muh
 bool Controller::LoadMobility()
 {
     model.mue.resize(model.T.size());
     model.muh.resize(model.T.size());
+    constexpr const double a = 1e6;
+    constexpr const double b = 1e-7;
+    for (size_t i = 0; i < model.T.size(); ++i) {
+        model.mue[i] = GetMue(a, b, model.T[i], model.NdPlus[i], model.NaMinus[i]);
+        model.muh[i] = model.mue[i];
+    }
     return true;
 //    QByteArray mobility;
 //    if (!CallMobility({"--mobility"}, mobility)) {
@@ -48,19 +72,23 @@ void Controller::Recalculate()
     model.p.clear();
     model.sigma.clear();
 
-    LoadMobility();
     for (double t : model.T) {
-        model.Nc.push_back(Formulas::CalcEffectiveDensityState(t));
-        model.Nv.push_back(Formulas::CalcEffectiveDensityState(t));
-        double Ef = Formulas::CalcFermiLevel(model.Nc.back(), model.Nv.back(), t, model.Na0, model.Nd0, model.Eg, model.Ea, model.Ed);
-        model.n.push_back(Formulas::CalcN(model.Nc.back(), Ef, t));
+        model.Nc.push_back(Formulas::CalcEffectiveDensityState(model.me, t));
+        model.Nv.push_back(Formulas::CalcEffectiveDensityState(model.mh, t));
+        double Ec = model.Eg; // Assume Ev == 0
+        double Ef = Formulas::CalcFermiLevel(model.Nc.back(), model.Nv.back(), t, model.Na0, model.Nd0, Ec, model.Ea, model.Ed);
+        model.n.push_back(Formulas::CalcN(model.Nc.back(), model.Eg, Ef, t));
         model.p.push_back(Formulas::CalcP(model.Nv.back(), Ef, t));
-        // FIXME: NdPlus
-        model.NdPlus.push_back(1);
-        // FIXME: NaMinus
-        model.NaMinus.push_back(1);
-        model.sigma.push_back(Formulas::FindConductivity(model.mue.back(), model.muh.back(), t,
-                                                         model.Na0, model.Nd0, model.Eg, model.Ea, model.Ed));
+
+        model.NaMinus.push_back(Formulas::CalcNaMinus(t, Ef, model.Ea, model.Na0));
+        model.NdPlus.push_back(Formulas::CalcNdPlus(t, Ef, model.Ed, model.Nd0));
+    }
+
+    LoadMobility();
+
+    for (size_t i = 0; i < model.T.size(); ++i) {
+        model.sigma.push_back(Formulas::FindConductivity(model.n[i], model.p[i], model.mue[i], model.muh[i]));
+
     }
 }
 
@@ -127,26 +155,8 @@ double Controller::GetNa0() const
 }
 
 // TODO: initialize model
-Controller::Controller()
-{
-    std::vector<double> res(100);
+Controller::Controller() {
 
-    std::iota(res.begin(), res.end(), 200);
-    model.T = res;
-    std::iota(res.begin(), res.end(), 200);
-    model.n = res;
-    std::iota(res.begin(), res.end(), -300);
-    model.p = res;
-    std::iota(res.begin(), res.end(), 1000);
-    model.NdPlus = res;
-    std::iota(res.begin(), res.end(), -1100);
-    model.NaMinus = res;
-    std::iota(res.begin(), res.end(), 10000);
-    model.mue = res;
-    std::iota(res.begin(), res.end(), -10100);
-    model.muh = res;
-    std::iota(res.begin(), res.end(), 0);
-    model.sigma = res;
 }
 
 bool Controller::CallMobility(QStringList args, QByteArray &data)

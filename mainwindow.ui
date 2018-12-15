@@ -122,6 +122,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="text">
+            <string/>
+           </property>
           </widget>
          </item>
         </layout>
@@ -157,6 +160,9 @@
              <width>100</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
@@ -260,6 +266,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="text">
+            <string/>
+           </property>
           </widget>
          </item>
          <item>
@@ -294,6 +303,9 @@
              <width>60</width>
              <height>16777215</height>
             </size>
+           </property>
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>
