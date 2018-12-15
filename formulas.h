@@ -21,5 +21,5 @@ public:
 private:
     static constexpr const double k = 8.6173303e-05;  // Boltzmann constant, eV / K
 //    static constexpr const double k  = 1.380648 * 1e-23;    // SI
-    static constexpr const double e  = 1.60217662e-19 * 1e-19;
+    static constexpr const double e  = 1.60217662e-19;
 };

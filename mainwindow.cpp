@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     chart->legend()->hide();
     chartView->setChart(chart);
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
+    ui->chartWidget->deleteLater();
 
 //    ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
     ui->ed->setValidator(new DoubleValidator(-20.0, 20.0, 9, ui->ed));
@@ -118,7 +119,7 @@ void MainWindow::updateChart()
         if (point.y() > max) max = point.y();
         if (point.y() < min) min = point.y();
     }
-    if (min < 1) min = 1;
+//    if (min < 1) min = 1;
     visible->attachAxis(chart->axisX());
     visible->attachAxis(chart->axisY());
     chart->axisY()->setRange(min, max);
