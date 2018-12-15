@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>help_image_128x128_transp.png</file>
+    </qresource>
+</RCC>

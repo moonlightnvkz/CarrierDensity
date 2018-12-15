@@ -463,21 +463,20 @@
      <height>20</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_0">
     <property name="title">
      <string>Файл</string>
     </property>
     <addaction name="action_ASCII"/>
-    <addaction name="action_2"/>
     <addaction name="action_ASCII_2"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
      <string>Помощь</string>
     </property>
-    <addaction name="action"/>
+    <addaction name="about"/>
    </widget>
-   <widget class="QMenu" name="menu_3">
+   <widget class="QMenu" name="menu_1">
     <property name="title">
      <string>Вид</string>
     </property>
@@ -489,8 +488,8 @@
     <addaction name="action_8"/>
     <addaction name="action_9"/>
    </widget>
-   <addaction name="menu"/>
-   <addaction name="menu_3"/>
+   <addaction name="menu_0"/>
+   <addaction name="menu_1"/>
    <addaction name="menu_2"/>
   </widget>
   <action name="action_ASCII">
@@ -498,14 +497,9 @@
     <string>Сохранить в ASCII...</string>
    </property>
   </action>
-  <action name="action">
+  <action name="about">
    <property name="text">
     <string>О программе</string>
-   </property>
-  </action>
-  <action name="action_2">
-   <property name="text">
-    <string>Загрузить подвижность...</string>
    </property>
   </action>
   <action name="action_ASCII_2">
@@ -515,7 +509,7 @@
   </action>
   <action name="action_3">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="enabled">
     <bool>true</bool>
@@ -526,7 +520,7 @@
   </action>
   <action name="action_4">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Концентрация дырок</string>
@@ -534,7 +528,7 @@
   </action>
   <action name="action_5">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Концентрация заряженных доноров</string>
@@ -542,7 +536,7 @@
   </action>
   <action name="action_6">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Концентрация заряженных акцепторов</string>
@@ -550,7 +544,7 @@
   </action>
   <action name="action_7">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Подвижность электронов</string>
@@ -558,7 +552,7 @@
   </action>
   <action name="action_8">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Подвижность дырок</string>
@@ -566,10 +560,10 @@
   </action>
   <action name="action_9">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Удельная проводимость</string>

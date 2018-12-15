@@ -25,8 +25,6 @@ private slots:
 
     void on_action_ASCII_triggered();
 
-    void on_action_2_triggered();
-
     void on_action_6_triggered();
 
     void on_action_3_triggered();
@@ -56,6 +54,8 @@ private slots:
     void on_me_editingFinished();
 
     void on_mh_editingFinished();
+
+    void on_about_triggered();
 
 private:
     enum class ChartState {

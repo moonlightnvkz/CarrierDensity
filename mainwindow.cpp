@@ -7,12 +7,14 @@
 #include <QMessageBox>
 #include <QLogValueAxis>
 #include <QValueAxis>
+#include <QWidgetAction>
 #include <fstream>
 #include <memory>
 #include <string>
 #include <cmath>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_about.h"
 #include "doublevalidator.h"
 #include "model.h"
 #include "controller.h"
@@ -61,6 +63,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tempFrom->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempFrom));
     ui->tempTo->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempTo));
+
+    QActionGroup *chartsGroup = new QActionGroup(this);
+    chartsGroup->addAction(ui->action_3);
+    chartsGroup->addAction(ui->action_4);
+    chartsGroup->addAction(ui->action_5);
+    chartsGroup->addAction(ui->action_6);
+    chartsGroup->addAction(ui->action_7);
+    chartsGroup->addAction(ui->action_8);
+    chartsGroup->addAction(ui->action_9);
 
     SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
     SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
@@ -181,7 +192,9 @@ void MainWindow::redraw()
 void MainWindow::on_action_ASCII_2_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Загрузить из ASCII"), "./", tr("Text files (*.txt)"));
-
+    if (filename.size() == 0) {
+        return;
+    }
     std::ifstream is(filename.toStdString());
 
     if (Controller::GetInstance().LoadFromASCII(is)) {
@@ -197,23 +210,13 @@ void MainWindow::on_action_ASCII_2_triggered()
 void MainWindow::on_action_ASCII_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, tr("Сохранить в ASCII"), "./", tr("Text files (*.txt)"));
-
+    if (filename.size() == 0) {
+        return;
+    }
     std::ofstream os(filename.toStdString());
     if (!Controller::GetInstance().SaveToASCII(os)) {
         QMessageBox msgBox;
         msgBox.setText("Не удалось сохранить ASII файл :(");
-        msgBox.exec();
-    }
-}
-
-// load mobility
-void MainWindow::on_action_2_triggered()
-{
-    if (Controller::GetInstance().LoadMobility()) {
-        redraw();
-    } else {
-        QMessageBox msgBox;
-        msgBox.setText("Не удалось загрузить подвижность :(");
         msgBox.exec();
     }
 }
@@ -329,4 +332,13 @@ void MainWindow::on_mh_editingFinished()
     double value = READ_AND_VALIDATE(ui->mh);
     Controller::GetInstance().UpdateMh(value);
     redraw();
+}
+
+void MainWindow::on_about_triggered()
+{
+    QDialog *about = new QDialog(this);
+    Ui::About about_ui;
+    about_ui.setupUi(about);
+
+    about->show();
 }
