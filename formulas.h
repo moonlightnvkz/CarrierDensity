@@ -10,6 +10,10 @@ public:
 
     static double CalcP(double Nv, double Ef, double T  = 300);
 
+    static double CalcNdPlus(double T, double Ef, double Eg, double Ed, double Nd0);
+
+    static double CalcNaMinus(double T, double Ef, double Ea, double Na0);
+
     static double CalcFermiLevel(double Nc, double Nv, double T, double Na0, double Nd0, double Eg, double Ea, double Ed);
 
     static double FindConductivity(double muE, double muP, double T, double Na0, double Nd0, double Eg, double Ea, double Ed);
