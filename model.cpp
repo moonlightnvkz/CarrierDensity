@@ -50,6 +50,9 @@ void Model::LoadPreset(Model::Preset preset)
        Eg = 1.42;
        me = 0.067;
        mh = 0.45;
+       break;
+    default:
+        break;
     }
 }
 

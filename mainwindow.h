@@ -51,6 +51,12 @@ private slots:
 
     void on_na0_editingFinished();
 
+    void on_eg_editingFinished();
+
+    void on_me_editingFinished();
+
+    void on_mh_editingFinished();
+
 private:
     enum class ChartState {
         ElectronsConcentration = 0,

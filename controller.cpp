@@ -1,6 +1,7 @@
 #include <numeric> // std::iota
 #include <sstream>
 #include <QProcess>
+#include <QDebug>
 #include <cmath>
 #include "controller.h"
 #include "formulas.h"
@@ -79,7 +80,6 @@ void Controller::Recalculate()
         double Ef = Formulas::CalcFermiLevel(model.Nc.back(), model.Nv.back(), t, model.Na0, model.Nd0, Ec, model.Ea, model.Ed);
         model.n.push_back(Formulas::CalcN(model.Nc.back(), model.Eg, Ef, t));
         model.p.push_back(Formulas::CalcP(model.Nv.back(), Ef, t));
-
         model.NaMinus.push_back(Formulas::CalcNaMinus(t, Ef, model.Ea, model.Na0));
         model.NdPlus.push_back(Formulas::CalcNdPlus(t, Ef, model.Ed, model.Nd0));
     }
@@ -134,6 +134,24 @@ void Controller::UpdateNa0(double value)
     Recalculate();
 }
 
+void Controller::UpdateEg(double value)
+{
+    model.Eg = value;
+    Recalculate();
+}
+
+void Controller::UpdateMe(double value)
+{
+    model.me = value;
+    Recalculate();
+}
+
+void Controller::UpdateMh(double value)
+{
+    model.mh = value;
+    Recalculate();
+}
+
 double Controller::GetEd() const
 {
     return model.Ed;
@@ -152,6 +170,21 @@ double Controller::GetEa() const
 double Controller::GetNa0() const
 {
     return model.Na0;
+}
+
+double Controller::GetEg() const
+{
+    return model.Eg;
+}
+
+double Controller::GetMe() const
+{
+    return model.me;
+}
+
+double Controller::GetMh() const
+{
+    return model.mh;
 }
 
 // TODO: initialize model

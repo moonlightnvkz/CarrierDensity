@@ -32,6 +32,12 @@ public:
 
     void UpdateNa0(double value);
 
+    void UpdateEg(double value);
+
+    void UpdateMe(double value);
+
+    void UpdateMh(double value);
+
     double GetEd() const;
 
     double GetNd0() const;
@@ -39,6 +45,12 @@ public:
     double GetEa() const;
 
     double GetNa0() const;
+
+    double GetEg() const;
+
+    double GetMe() const;
+
+    double GetMh() const;
 
     const std::vector<double> &GetTemperature();
 

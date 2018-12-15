@@ -8,6 +8,7 @@ struct Model {
         Ge,
         Si,
         GaAs,
+        Custom
     };
 
     // Apriori

@@ -46,7 +46,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0,0,0,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetMaximumSize</enum>
         </property>
@@ -94,6 +94,119 @@
               <string>GaAs</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Custom</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Eg, эВ</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="eg">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>me/m0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="me">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>mh/m0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="mh">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
            </widget>
           </item>
          </layout>
@@ -106,7 +219,7 @@
           <item>
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Ed, Дж</string>
+             <string>Ed, эВ</string>
             </property>
            </widget>
           </item>
@@ -145,7 +258,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>Nd0, м-3</string>
+             <string>Nd0, см-3</string>
             </property>
            </widget>
           </item>
@@ -184,7 +297,7 @@
           <item>
            <widget class="QLabel" name="label_4">
             <property name="text">
-             <string>Ea, Дж</string>
+             <string>Ea, эВ</string>
             </property>
            </widget>
           </item>
@@ -220,7 +333,7 @@
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Na0, м-3</string>
+             <string>Na0, см-3</string>
             </property>
            </widget>
           </item>
@@ -324,6 +437,9 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>20</width>
@@ -398,36 +514,63 @@
    </property>
   </action>
   <action name="action_3">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Концентрация электронов</string>
    </property>
   </action>
   <action name="action_4">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Концентрация дырок</string>
    </property>
   </action>
   <action name="action_5">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Концентрация заряженных доноров</string>
    </property>
   </action>
   <action name="action_6">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Концентрация заряженных акцепторов</string>
    </property>
   </action>
   <action name="action_7">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Подвижность электронов</string>
    </property>
   </action>
   <action name="action_8">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Подвижность дырок</string>
    </property>
   </action>
   <action name="action_9">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Удельная проводимость</string>
    </property>

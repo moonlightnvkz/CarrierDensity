@@ -19,6 +19,8 @@
 
 #define READ_AND_VALIDATE(control) control->validator()->locale().toDouble(control->text())
 
+#define SET_TEXT_LOCALE(elem, value) ui-> elem ->setText(ui-> elem ->validator()->locale().toString(value))
+
 using namespace QtCharts;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -36,26 +38,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
     ui->chartWidget->deleteLater();
 
-//    ui->eg->setValidator(new DoubleValidator(-20.0, 20.0, 2, ui->eg));
-    ui->ed->setValidator(new DoubleValidator(-20.0, 20.0, 9, ui->ed));
-    ui->ea->setValidator(new DoubleValidator(-20.0, 20.0, 9, ui->ea));
+    ui->eg->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->eg));
+    ui->ed->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->ed));
+    ui->ea->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->ea));
 
     DoubleValidator *validator;
-//    validator = new DoubleValidator(1e-30, 1, 2, ui->me);
-//    validator->setNotation(DoubleValidator::ScientificNotation);
-//    ui->me->setValidator(validator);
+    validator = new DoubleValidator(0, 1e1, 9, ui->me);
+    validator->setNotation(DoubleValidator::ScientificNotation);
+    ui->me->setValidator(validator);
 
-//    validator = new DoubleValidator(1e-30, 1, 2, ui->mh);
-//    validator->setNotation(DoubleValidator::ScientificNotation);
-//    ui->mh->setValidator(validator);
-
-//    validator = new DoubleValidator(0.0, 1e30, 2, ui->nc);
-//    validator->setNotation(DoubleValidator::ScientificNotation);
-//    ui->nc->setValidator(validator);
-
-//    validator = new DoubleValidator(0.0, 1e30, 2, ui->nv);
-//    validator->setNotation(DoubleValidator::ScientificNotation);
-//    ui->nv->setValidator(validator);
+    validator = new DoubleValidator(0, 1e1, 9, ui->mh);
+    validator->setNotation(DoubleValidator::ScientificNotation);
+    ui->mh->setValidator(validator);
 
     validator = new DoubleValidator(0.0, 1e30, 9, ui->nd0);
     validator->setNotation(DoubleValidator::ScientificNotation);
@@ -67,6 +61,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tempFrom->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempFrom));
     ui->tempTo->setValidator(new DoubleValidator(0.0, 1e4, 9, ui->tempTo));
+
+    SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
+    SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
+    SET_TEXT_LOCALE(nd0, Controller::GetInstance().GetNd0());
+    SET_TEXT_LOCALE(na0, Controller::GetInstance().GetNa0());
+    const auto &temp = Controller::GetInstance().GetTemperature();
+    SET_TEXT_LOCALE(tempFrom, temp[0]);
+    SET_TEXT_LOCALE(tempTo, temp.back());
+
     on_material_currentIndexChanged(ui->material->currentIndex());
 }
 
@@ -257,19 +260,23 @@ void MainWindow::on_action_9_triggered()
     redraw();
 }
 
-#define SET_TEXT_LOCALE(elem, value) ui-> elem ->setText(ui-> elem ->validator()->locale().toString(value))
-
 void MainWindow::on_material_currentIndexChanged(int index)
 {
     Controller::GetInstance().UpdateMaterial(index);
 
-    SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
-    SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
-    SET_TEXT_LOCALE(nd0, Controller::GetInstance().GetNd0());
-    SET_TEXT_LOCALE(na0, Controller::GetInstance().GetNa0());
-    const auto &temp = Controller::GetInstance().GetTemperature();
-    SET_TEXT_LOCALE(tempFrom, temp[0]);
-    SET_TEXT_LOCALE(tempTo, temp.back());
+    if (index == static_cast<int>(Model::Preset::Custom)) {
+        ui->eg->setEnabled(true);
+        ui->me->setEnabled(true);
+        ui->mh->setEnabled(true);
+    } else {
+        SET_TEXT_LOCALE(eg, Controller::GetInstance().GetEg());
+        SET_TEXT_LOCALE(me, Controller::GetInstance().GetMe());
+        SET_TEXT_LOCALE(mh, Controller::GetInstance().GetMh());
+        ui->eg->setEnabled(false);
+        ui->me->setEnabled(false);
+        ui->mh->setEnabled(false);
+    }
+
     redraw();
 }
 
@@ -300,5 +307,26 @@ void MainWindow::on_na0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->na0);
     Controller::GetInstance().UpdateNa0(value);
+    redraw();
+}
+
+void MainWindow::on_eg_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->eg);
+    Controller::GetInstance().UpdateEg(value);
+    redraw();
+}
+
+void MainWindow::on_me_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->me);
+    Controller::GetInstance().UpdateMe(value);
+    redraw();
+}
+
+void MainWindow::on_mh_editingFinished()
+{
+    double value = READ_AND_VALIDATE(ui->mh);
+    Controller::GetInstance().UpdateMh(value);
     redraw();
 }
