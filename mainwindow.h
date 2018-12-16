@@ -57,6 +57,8 @@ private slots:
 
     void on_about_triggered();
 
+    void on_action_log_triggered(bool checked);
+
 private:
     enum class ChartState {
         ElectronsConcentration = 0,
@@ -74,11 +76,13 @@ private:
 
     ChartState chartState = ChartState::Conductivity;
 
+    bool logarithmic = false;
+
     void validateTemperatureRange();
 
     void updateChart();
 
-    void redraw();
+    void updateData();
 };
 
 #endif // MAINWINDOW_H

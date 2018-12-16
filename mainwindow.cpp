@@ -31,11 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setWindowTitle("Удельная проводимость");
+
     chartView = new QChartView(this);
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     QChart *chart = new QChart();
     chart->legend()->hide();
+    chart->setLocalizeNumbers(true);
     chartView->setChart(chart);
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
     ui->chartWidget->deleteLater();
@@ -110,7 +113,7 @@ void MainWindow::validateTemperatureRange()
     }
 
     Controller::GetInstance().UpdateT(from, to);
-    redraw();
+    updateData();
 }
 
 void MainWindow::updateChart()
@@ -126,21 +129,59 @@ void MainWindow::updateChart()
     QLineSeries *visible = static_cast<QLineSeries*>(list[static_cast<int>(chartState)]);
     visible->show();
 
-    double min = std::numeric_limits<double>::max();
-    double max = -std::numeric_limits<double>::max();
+    double x_min = std::numeric_limits<double>::max();
+    double x_max = -std::numeric_limits<double>::max();
+    double y_min = std::numeric_limits<double>::max();
+    double y_max = -std::numeric_limits<double>::max();
     for (QPointF point : visible->points()) {
-        // FIXME: logarithmic axis
-        if (point.y() > max) max = point.y();
-        if (point.y() < min) min = point.y();
+        double x = point.x();
+        double y = point.y();
+
+        if (x > x_max) x_max = x;
+        if (x < x_min) x_min = x;
+        if (y > y_max) y_max = y;
+        if (y < y_min) y_min = y;
     }
-//    if (min < 1) min = 1;
+
+    QValueAxis *x = new QValueAxis;
+    x->setRange(x_min, x_max);
+    x->setMinorTickCount(-1);
+    x->setTitleText("Температура, К");
+
+    QAbstractAxis *y;
+    if (logarithmic) {
+        QLogValueAxis *y_log = new QLogValueAxis;
+
+        y_log->setBase(10);
+        y_log->setLabelFormat("%.1g");
+//        y_log->setMinorTickCount(-1);
+
+        if (y_min < 1e-100) y_min = 1e-100;
+        y_log->setRange(y_min, y_max);
+
+        y = y_log;
+    } else {
+        QValueAxis *y_value = new QValueAxis;
+
+        y_value->setLabelFormat("%.1g");
+        y_value->applyNiceNumbers();
+
+        y = y_value;
+    }
+
+    y->setTitleText(visible->name());
+
+    if (chart->axisX()) chart->removeAxis(chart->axisX());
+    if (chart->axisY()) chart->removeAxis(chart->axisY());
+
+    chart->addAxis(x, Qt::AlignBottom);
+    chart->addAxis(y, Qt::AlignLeft);
+
     visible->attachAxis(chart->axisX());
     visible->attachAxis(chart->axisY());
-    chart->axisY()->setRange(min, max);
-    qDebug() << "Y Range: (" << min << ", " << max << ")";
 }
 
-void MainWindow::redraw()
+void MainWindow::updateData()
 {
     assert(chartView && chartView->chart());
     const std::vector<double> &temperature = Controller::GetInstance().GetTemperature();
@@ -153,6 +194,15 @@ void MainWindow::redraw()
                                           &Controller::GetInstance().GetElectronsMobility(),
                                           &Controller::GetInstance().GetHolesMobility(),
                                           &Controller::GetInstance().GetConductivity() };
+
+    constexpr const char *titles[] = { "Концентрация электронов, см-3",
+                                       "Концентрация дырок, см-3",
+                                       "Концентрация заряженных доноров, см-3",
+                                       "Концентрация заряженных акцепторов, см-3",
+                                       "Подвижность электронов, см2/(В*с)",
+                                       "Подвижность дырок, см2/(В*с)",
+                                       "Удельная проводимость, 1/(Ом*м)" };
+
     QChart * chart = chartView->chart();
     chart->removeAllSeries();
     for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); ++i) {
@@ -163,27 +213,19 @@ void MainWindow::redraw()
             series->append(temperature[i], datum->at(i));
         }
         series->setColor(QColor(0, 0, 255));
-//        series->hide();
+        series->setName(titles[i]);
         chart->addSeries(series);
     }
-
-    QValueAxis *x = new QValueAxis;
-    if (temperature.size() > 0) {
-        x->setRange(temperature[0], temperature.back());
-    }
-    x->setMinorTickCount(-1);
-    x->setTitleText("Температура, К");
-
-    QValueAxis *y = new QValueAxis;
-    y->setMinorTickCount(-1);
-    y->setLabelFormat("%.1g");
-//    y->setBase(10);
-
-    chart->removeAxis(chart->axisX());
-    chart->removeAxis(chart->axisY());
-
-    chart->addAxis(x, Qt::AlignBottom);
-    chart->addAxis(y, Qt::AlignLeft);
+    ui->material->setCurrentIndex(Controller::GetInstance().GetMaterial());
+    SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
+    SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
+    SET_TEXT_LOCALE(nd0, Controller::GetInstance().GetNd0());
+    SET_TEXT_LOCALE(na0, Controller::GetInstance().GetNa0());
+    SET_TEXT_LOCALE(tempFrom, temperature[0]);
+    SET_TEXT_LOCALE(tempTo, temperature.back());
+    SET_TEXT_LOCALE(eg, Controller::GetInstance().GetEg());
+    SET_TEXT_LOCALE(me, Controller::GetInstance().GetMe());
+    SET_TEXT_LOCALE(mh, Controller::GetInstance().GetMh());
 
     updateChart();
 }
@@ -198,7 +240,7 @@ void MainWindow::on_action_ASCII_2_triggered()
     std::ifstream is(filename.toStdString());
 
     if (Controller::GetInstance().LoadFromASCII(is)) {
-        redraw();
+        updateData();
     } else {
         QMessageBox msgBox;
         msgBox.setText("Не удалось загрузить ASII файл :(");
@@ -224,43 +266,43 @@ void MainWindow::on_action_ASCII_triggered()
 void MainWindow::on_action_3_triggered()
 {
     chartState = ChartState::ElectronsConcentration;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_4_triggered()
 {
     chartState = ChartState::HolesConcentration;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_5_triggered()
 {
     chartState = ChartState::DonorsConcentration;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_6_triggered()
 {
     chartState = ChartState::AcceptorsConcentration;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_7_triggered()
 {
     chartState = ChartState::ElectronsMobility;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_8_triggered()
 {
     chartState = ChartState::HolesMobility;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_action_9_triggered()
 {
     chartState = ChartState::Conductivity;
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_material_currentIndexChanged(int index)
@@ -280,58 +322,56 @@ void MainWindow::on_material_currentIndexChanged(int index)
         ui->mh->setEnabled(false);
     }
 
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_ed_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->ed);
-    qDebug() << "DDDDDDDDDDDDDDDDDDDDDDDDDDDDD" << value;
     Controller::GetInstance().UpdateEd(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_nd0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->nd0);
     Controller::GetInstance().UpdateNd0(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_ea_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->ea);
-    qDebug() << "AAAAAAAAAAAAAAAAAAAAAAAAAAAA" << value;
     Controller::GetInstance().UpdateEa(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_na0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->na0);
     Controller::GetInstance().UpdateNa0(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_eg_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->eg);
     Controller::GetInstance().UpdateEg(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_me_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->me);
     Controller::GetInstance().UpdateMe(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_mh_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->mh);
     Controller::GetInstance().UpdateMh(value);
-    redraw();
+    updateData();
 }
 
 void MainWindow::on_about_triggered()
@@ -340,5 +380,13 @@ void MainWindow::on_about_triggered()
     Ui::About about_ui;
     about_ui.setupUi(about);
 
+    about->setWindowTitle("О программе");
+
     about->show();
+}
+
+void MainWindow::on_action_log_triggered(bool checked)
+{
+    logarithmic = checked;
+    updateChart();
 }

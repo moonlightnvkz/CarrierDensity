@@ -38,6 +38,8 @@ public:
 
     void UpdateMh(double value);
 
+    int GetMaterial() const;
+
     double GetEd() const;
 
     double GetNd0() const;

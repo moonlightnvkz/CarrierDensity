@@ -79,6 +79,12 @@
               <height>0</height>
              </size>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <item>
              <property name="text">
               <string>Ge</string>
@@ -96,7 +102,7 @@
             </item>
             <item>
              <property name="text">
-              <string>Custom</string>
+              <string>Пользовательский</string>
              </property>
             </item>
            </widget>
@@ -480,6 +486,8 @@
     <property name="title">
      <string>Вид</string>
     </property>
+    <addaction name="action_log"/>
+    <addaction name="separator"/>
     <addaction name="action_3"/>
     <addaction name="action_4"/>
     <addaction name="action_5"/>
@@ -567,6 +575,14 @@
    </property>
    <property name="text">
     <string>Удельная проводимость</string>
+   </property>
+  </action>
+  <action name="action_log">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Логарифмический масштаб</string>
    </property>
   </action>
  </widget>

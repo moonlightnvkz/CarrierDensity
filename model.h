@@ -21,6 +21,7 @@ struct Model {
     double Nd0 = 5.5e13;
     double Ea = 0;
     double Na0 = 0;
+    Preset preset;
 
     static constexpr const int TCount = 1000;
 
@@ -37,6 +38,8 @@ struct Model {
     std::vector<double> n;
     std::vector<double> p;
     std::vector<double> sigma;
+
+    Model();
 
     bool Serialize(std::ostream &os) const;
 

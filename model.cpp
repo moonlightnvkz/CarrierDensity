@@ -4,9 +4,15 @@
 
 #define Elvis(container, i, value) container.size() > i ? container[i] : value
 
+Model::Model()
+{
+    LoadPreset(Preset::Ge);
+}
+
 bool Model::Serialize(std::ostream &os) const
 {
-    os << Eg << " " << me << " " << mh << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << std::endl;
+    os << Eg << " " << me << " " << mh << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << " "
+       << static_cast<int>(preset) << std::endl;
     for (size_t i = 0; i < T.size(); ++i) {
         double T_ = T[i];
         double mue_ = Elvis(mue, i, 0.0);
@@ -24,7 +30,9 @@ bool Model::Serialize(std::ostream &os) const
 
 bool Model::Deserialize(std::istream &is)
 {
-    is >> Eg  >> me >> mh >> Ed >> Nd0 >> Ea >> Na0;
+    int preset_;
+    is >> Eg  >> me >> mh >> Ed >> Nd0 >> Ea >> Na0 >> preset_;
+    preset = static_cast<Preset>(preset_);
     for (size_t i = 0; i < T.size(); ++i) {
         is >> T[i] >> mue[i] >> muh[i] >> Nc[i] >> Nv[i] >> n[i] >> p[i] >> sigma[i];
     }
@@ -32,9 +40,9 @@ bool Model::Deserialize(std::istream &is)
 }
 
 //https://ru.wikipedia.org/wiki/%D0%AD%D1%84%D1%84%D0%B5%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%81%D0%B0
-// TODO: implement LoadPreset
-void Model::LoadPreset(Model::Preset preset)
+void Model::LoadPreset(Model::Preset preset_)
 {
+    preset = preset_;
     switch (preset) {
     case Preset::Ge:
        Eg = 0.661;

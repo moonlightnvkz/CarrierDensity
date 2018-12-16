@@ -60,7 +60,6 @@ bool Controller::LoadMobility()
 //    }
 }
 
-// TODO: implement Recalculate
 void Controller::Recalculate()
 {
     model.mue.clear();
@@ -150,6 +149,11 @@ void Controller::UpdateMh(double value)
 {
     model.mh = value;
     Recalculate();
+}
+
+int Controller::GetMaterial() const
+{
+    return static_cast<int>(model.preset);
 }
 
 double Controller::GetEd() const

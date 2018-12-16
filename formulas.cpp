@@ -17,7 +17,7 @@ double Formulas::CalcP(double Nv, double Ef, double T){
 
 double Formulas::CalcFermiLevel(double Nc, double Nv, double T, double Na0, double Nd0, double Eg, double Ea, double Ed) {
     double left = 0;
-    double right = Eg;
+    double right = 1e2;
     auto func = [=](double Ef) {
         double n = Formulas::CalcN(Nc, Eg, Ef, T);
         double p = Formulas::CalcP(Nv, Ef, T);
