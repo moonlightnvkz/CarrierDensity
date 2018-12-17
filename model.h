@@ -1,27 +1,29 @@
 #ifndef MODEL_H
 #define MODEL_H
+#include <QStringList>
+#include <map>
 #include <vector>
 #include <iosfwd>
 
 struct Model {
-    enum class Preset {
-        Ge,
-        Si,
-        GaAs,
-        Custom
+    struct Preset {
+        double Eg;
+        double me;
+        double mh;
+        double ae;
+        double be;
+        double ah;
+        double bh;
     };
 
-    // Apriori
-    double Eg = 0;
-    double me = 0;
-    double mh = 0;
+    std::map<QString, Preset> presets;
 
     // UI
     double Ed = 0.647;
     double Nd0 = 5.5e13;
     double Ea = 0;
     double Na0 = 0;
-    Preset preset;
+    QString currentPreset;
 
     static constexpr const int TCount = 1000;
 
@@ -45,7 +47,7 @@ struct Model {
 
     bool Deserialize(std::istream &is);
 
-    void LoadPreset(Preset preset);
+    void LoadPreset(QString preset);
 
     bool LoadMobility(std::istream &is);
 };

@@ -49,12 +49,6 @@ private slots:
 
     void on_na0_editingFinished();
 
-    void on_eg_editingFinished();
-
-    void on_me_editingFinished();
-
-    void on_mh_editingFinished();
-
     void on_about_triggered();
 
     void on_action_log_triggered(bool checked);

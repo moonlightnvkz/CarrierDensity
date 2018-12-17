@@ -12,6 +12,10 @@ public:
 
     static void Init();
 
+    void LoadSettings();
+
+    void SaveSettings();
+
     bool LoadFromASCII(std::istream &is);
 
     bool SaveToASCII(std::ostream &os);
@@ -22,7 +26,7 @@ public:
 
     void UpdateT(double from, double to);
 
-    void UpdateMaterial(int idx);
+    void UpdateMaterial(const QString &name);
 
     void UpdateEd(double value);
 
@@ -32,13 +36,9 @@ public:
 
     void UpdateNa0(double value);
 
-    void UpdateEg(double value);
+    const QString &GetMaterial() const;
 
-    void UpdateMe(double value);
-
-    void UpdateMh(double value);
-
-    int GetMaterial() const;
+    QStringList GetAllMaterials() const;
 
     double GetEd() const;
 
@@ -47,12 +47,6 @@ public:
     double GetEa() const;
 
     double GetNa0() const;
-
-    double GetEg() const;
-
-    double GetMe() const;
-
-    double GetMh() const;
 
     const std::vector<double> &GetTemperature();
 
@@ -78,6 +72,10 @@ private:
     bool inited = false;
 
     bool CallMobility(QStringList args, QByteArray &data);
+
+    void LoadSettingsDefault();
+
+    static constexpr const char *SettingsFile = "settings.ini";
 };
 
 #endif // CONTROLLER_H

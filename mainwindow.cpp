@@ -43,19 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->mainLayout->replaceWidget(ui->chartWidget, chartView);
     ui->chartWidget->deleteLater();
 
-    ui->eg->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->eg));
     ui->ed->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->ed));
     ui->ea->setValidator(new DoubleValidator(0.0, 20.0, 9, ui->ea));
 
     DoubleValidator *validator;
-    validator = new DoubleValidator(0, 1e1, 9, ui->me);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->me->setValidator(validator);
-
-    validator = new DoubleValidator(0, 1e1, 9, ui->mh);
-    validator->setNotation(DoubleValidator::ScientificNotation);
-    ui->mh->setValidator(validator);
-
     validator = new DoubleValidator(0.0, 1e30, 9, ui->nd0);
     validator->setNotation(DoubleValidator::ScientificNotation);
     ui->nd0->setValidator(validator);
@@ -75,6 +66,14 @@ MainWindow::MainWindow(QWidget *parent) :
     chartsGroup->addAction(ui->action_7);
     chartsGroup->addAction(ui->action_8);
     chartsGroup->addAction(ui->action_9);
+
+    QStringList materials = Controller::GetInstance().GetAllMaterials();
+    ui->material->clear();
+    qDebug() << "-------------" << materials.size();
+    for (const QString &name : materials) {
+        ui->material->addItem(name);
+    }
+    ui->material->setCurrentIndex(0);
 
     SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
     SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
@@ -218,16 +217,14 @@ void MainWindow::updateData()
         series->setName(titles[i]);
         chart->addSeries(series);
     }
-    ui->material->setCurrentIndex(Controller::GetInstance().GetMaterial());
+
+    // ui->material->setCurrentText(Controller::GetInstance().GetMaterial());
     SET_TEXT_LOCALE(ed, Controller::GetInstance().GetEd());
     SET_TEXT_LOCALE(ea, Controller::GetInstance().GetEa());
     SET_TEXT_LOCALE(nd0, Controller::GetInstance().GetNd0());
     SET_TEXT_LOCALE(na0, Controller::GetInstance().GetNa0());
     SET_TEXT_LOCALE(tempFrom, temperature[0]);
     SET_TEXT_LOCALE(tempTo, temperature.back());
-    SET_TEXT_LOCALE(eg, Controller::GetInstance().GetEg());
-    SET_TEXT_LOCALE(me, Controller::GetInstance().GetMe());
-    SET_TEXT_LOCALE(mh, Controller::GetInstance().GetMh());
 
     updateChart();
 }
@@ -309,20 +306,8 @@ void MainWindow::on_action_9_triggered()
 
 void MainWindow::on_material_currentIndexChanged(int index)
 {
-    Controller::GetInstance().UpdateMaterial(index);
-
-    if (index == static_cast<int>(Model::Preset::Custom)) {
-        ui->eg->setEnabled(true);
-        ui->me->setEnabled(true);
-        ui->mh->setEnabled(true);
-    } else {
-        SET_TEXT_LOCALE(eg, Controller::GetInstance().GetEg());
-        SET_TEXT_LOCALE(me, Controller::GetInstance().GetMe());
-        SET_TEXT_LOCALE(mh, Controller::GetInstance().GetMh());
-        ui->eg->setEnabled(false);
-        ui->me->setEnabled(false);
-        ui->mh->setEnabled(false);
-    }
+    QString name = ui->material->itemText(index);
+    Controller::GetInstance().UpdateMaterial(name);
 
     updateData();
 }
@@ -352,27 +337,6 @@ void MainWindow::on_na0_editingFinished()
 {
     double value = READ_AND_VALIDATE(ui->na0);
     Controller::GetInstance().UpdateNa0(value);
-    updateData();
-}
-
-void MainWindow::on_eg_editingFinished()
-{
-    double value = READ_AND_VALIDATE(ui->eg);
-    Controller::GetInstance().UpdateEg(value);
-    updateData();
-}
-
-void MainWindow::on_me_editingFinished()
-{
-    double value = READ_AND_VALIDATE(ui->me);
-    Controller::GetInstance().UpdateMe(value);
-    updateData();
-}
-
-void MainWindow::on_mh_editingFinished()
-{
-    double value = READ_AND_VALIDATE(ui->mh);
-    Controller::GetInstance().UpdateMh(value);
     updateData();
 }
 

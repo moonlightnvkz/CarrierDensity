@@ -4,15 +4,14 @@
 
 #define Elvis(container, i, value) container.size() > i ? container[i] : value
 
-Model::Model()
-{
-    LoadPreset(Preset::Ge);
-}
+Model::Model() { }
 
 bool Model::Serialize(std::ostream &os) const
 {
-    os << Eg << " " << me << " " << mh << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << " "
-       << static_cast<int>(preset) << std::endl;
+    const Preset &pr = presets.at(currentPreset);
+    os << pr.Eg << " " << pr.me << " " << pr.mh << " " << pr.ae << " " << pr.be << " " << pr.ah << " " << pr.bh
+       << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << " " << currentPreset.toStdString() << std::endl;
+
     for (size_t i = 0; i < T.size(); ++i) {
         double T_ = T[i];
         double mue_ = Elvis(mue, i, 0.0);
@@ -30,9 +29,13 @@ bool Model::Serialize(std::ostream &os) const
 
 bool Model::Deserialize(std::istream &is)
 {
-    int preset_;
-    is >> Eg  >> me >> mh >> Ed >> Nd0 >> Ea >> Na0 >> preset_;
-    preset = static_cast<Preset>(preset_);
+    std::string preset_;
+    double Eg, me, mh, ae, be, ah, bh;
+    is >> Eg  >> me >> mh >> ae >> be >> ah >> bh >> Ed >> Nd0 >> Ea >> Na0 >> preset_;
+
+    currentPreset.fromStdString(preset_);
+    presets[currentPreset] = {Eg, me, mh, ae, be, ah, bh};
+
     for (size_t i = 0; i < T.size(); ++i) {
         is >> T[i] >> mue[i] >> muh[i] >> Nc[i] >> Nv[i] >> n[i] >> p[i] >> sigma[i];
     }
@@ -40,28 +43,9 @@ bool Model::Deserialize(std::istream &is)
 }
 
 //https://ru.wikipedia.org/wiki/%D0%AD%D1%84%D1%84%D0%B5%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%81%D0%B0
-void Model::LoadPreset(Model::Preset preset_)
+void Model::LoadPreset(QString preset)
 {
-    preset = preset_;
-    switch (preset) {
-    case Preset::Ge:
-       Eg = 0.661;
-       me = 0.22;
-       mh = 0.34;
-       break;
-    case Preset::Si:
-       Eg = 1.12;
-       me = 1.08;
-       mh = 0.56;
-       break;
-    case Preset::GaAs:
-       Eg = 1.42;
-       me = 0.067;
-       mh = 0.45;
-       break;
-    default:
-        break;
-    }
+    currentPreset = preset;
 }
 
 

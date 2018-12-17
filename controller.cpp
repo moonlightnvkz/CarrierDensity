@@ -2,6 +2,8 @@
 #include <sstream>
 #include <QProcess>
 #include <QDebug>
+#include <QSettings>
+#include <QApplication>
 #include <cmath>
 #include "controller.h"
 #include "formulas.h"
@@ -22,6 +24,86 @@ void Controller::Init()
     c.model.T.resize(1000);
     std::iota(c.model.T.begin(), c.model.T.end(), 1);
     c.Recalculate();
+}
+
+void Controller::LoadSettings()
+{
+    QString settingsPath = QApplication::applicationDirPath() + SettingsFile;
+    QSettings settings(settingsPath, QSettings::NativeFormat);
+    qDebug() << "childGroups " << settings.childKeys();
+    QVariant value;
+    value = settings.value("presets/list", QVariant(QStringList()));
+    QStringList presetNames = value.toStringList();
+
+    bool ok = presetNames.size() > 0;
+    if (!ok) {
+        return LoadSettingsDefault();
+    }
+
+    std::map<QString, Model::Preset> presets;
+    for (const QString &name : presetNames) {
+        Model::Preset preset;
+        value = settings.value("presets/" + name + "/Eg", QVariant(0.0));
+        preset.Eg = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/me", QVariant(0.0));
+        preset.me = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/mh", QVariant(0.0));
+        preset.mh = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/ae", QVariant(0.0));
+        preset.ae = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/be", QVariant(0.0));
+        preset.be = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/ah", QVariant(0.0));
+        preset.ah = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+        value = settings.value("presets/" + name + "/bh", QVariant(0.0));
+        preset.bh = value.toDouble(&ok);
+        if (!ok) {
+            return LoadSettingsDefault();
+        }
+
+        presets[name] = preset;
+    }
+    model.presets = presets;
+    model.LoadPreset(presetNames[0]);
+}
+
+void Controller::SaveSettings()
+{
+    QString settingsPath = QApplication::applicationDirPath() + SettingsFile;
+    QSettings settings(settingsPath, QSettings::NativeFormat);
+
+    QStringList list;
+    for (const auto &kv : model.presets) {
+        list.push_back(kv.first);
+    }
+    settings.setValue("presets/list", list);
+    for (const auto &kv : model.presets) {
+        settings.setValue("presets/" + kv.first+ "/Eg", kv.second.Eg);
+        settings.setValue("presets/" + kv.first+ "/me", kv.second.me);
+        settings.setValue("presets/" + kv.first+ "/mh", kv.second.mh);
+        settings.setValue("presets/" + kv.first+ "/ae", kv.second.ae);
+        settings.setValue("presets/" + kv.first+ "/be", kv.second.be);
+        settings.setValue("presets/" + kv.first+ "/ah", kv.second.ah);
+        settings.setValue("presets/" + kv.first+ "/bh", kv.second.bh);
+    }
 }
 
 bool Controller::LoadFromASCII(std::istream &is)
@@ -71,13 +153,13 @@ void Controller::Recalculate()
     model.n.clear();
     model.p.clear();
     model.sigma.clear();
-
+    Model::Preset preset = model.presets[model.currentPreset];
     for (double t : model.T) {
-        model.Nc.push_back(Formulas::CalcEffectiveDensityState(model.me, t));
-        model.Nv.push_back(Formulas::CalcEffectiveDensityState(model.mh, t));
-        double Ec = model.Eg; // Assume Ev == 0
+        model.Nc.push_back(Formulas::CalcEffectiveDensityState(preset.me, t));
+        model.Nv.push_back(Formulas::CalcEffectiveDensityState(preset.mh, t));
+        double Ec = preset.Eg; // Assume Ev == 0
         double Ef = Formulas::CalcFermiLevel(model.Nc.back(), model.Nv.back(), t, model.Na0, model.Nd0, Ec, model.Ea, model.Ed);
-        model.n.push_back(Formulas::CalcN(model.Nc.back(), model.Eg, Ef, t));
+        model.n.push_back(Formulas::CalcN(model.Nc.back(), preset.Eg, Ef, t));
         model.p.push_back(Formulas::CalcP(model.Nv.back(), Ef, t));
         model.NaMinus.push_back(Formulas::CalcNaMinus(t, Ef, model.Ea, model.Na0));
         model.NdPlus.push_back(Formulas::CalcNdPlus(t, Ef, model.Ed, model.Nd0));
@@ -102,10 +184,9 @@ void Controller::UpdateT(double from, double to)
     Recalculate();
 }
 
-void Controller::UpdateMaterial(int idx)
+void Controller::UpdateMaterial(const QString &name)
 {
-    Model::Preset p = static_cast<Model::Preset>(idx);
-    model.LoadPreset(p);
+    model.LoadPreset(name);
     Recalculate();
 }
 
@@ -133,27 +214,18 @@ void Controller::UpdateNa0(double value)
     Recalculate();
 }
 
-void Controller::UpdateEg(double value)
+const QString & Controller::GetMaterial() const
 {
-    model.Eg = value;
-    Recalculate();
+    return model.currentPreset;
 }
 
-void Controller::UpdateMe(double value)
+QStringList Controller::GetAllMaterials() const
 {
-    model.me = value;
-    Recalculate();
-}
-
-void Controller::UpdateMh(double value)
-{
-    model.mh = value;
-    Recalculate();
-}
-
-int Controller::GetMaterial() const
-{
-    return static_cast<int>(model.preset);
+    QStringList names;
+    for (const auto &kv : model.presets) {
+        names.push_back(kv.first);
+    }
+    return names;
 }
 
 double Controller::GetEd() const
@@ -176,21 +248,6 @@ double Controller::GetNa0() const
     return model.Na0;
 }
 
-double Controller::GetEg() const
-{
-    return model.Eg;
-}
-
-double Controller::GetMe() const
-{
-    return model.me;
-}
-
-double Controller::GetMh() const
-{
-    return model.mh;
-}
-
 // TODO: initialize model
 Controller::Controller() {
 
@@ -210,6 +267,14 @@ bool Controller::CallMobility(QStringList args, QByteArray &data)
         data = process.readAllStandardOutput();
         return true;
     }
+}
+
+void Controller::LoadSettingsDefault()
+{
+    model.presets["Ge"] = {0.661, 0.22, 0.34, 2.33063e7, 6.63994, 1.5116e7, 3.42064};
+    model.presets["Si"] = {1.12, 1.08, 0.56, 9.80389e6, 7.55398, 5.58920e6, 7.21393};
+    model.LoadPreset("Ge");
+    SaveSettings();
 }
 
 const std::vector<double> &Controller::GetTemperature()
