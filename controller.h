@@ -75,7 +75,7 @@ private:
 
     void LoadSettingsDefault();
 
-    static constexpr const char *SettingsFile = "settings.ini";
+    static constexpr const char *SettingsFile = "/presets.ini";
 };
 
 #endif // CONTROLLER_H

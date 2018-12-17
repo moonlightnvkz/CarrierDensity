@@ -29,7 +29,6 @@ QValidator::State DoubleValidator::validate(QString &s, int &) const {
 
     bool ok;
     double d = locale().toDouble(s, &ok);
-    qDebug() << ok << " " << s << " " << d;
 
     bool meet_e = false;
     for (QChar c : s) {

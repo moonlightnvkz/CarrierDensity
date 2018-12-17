@@ -29,51 +29,51 @@ void Controller::Init()
 void Controller::LoadSettings()
 {
     QString settingsPath = QApplication::applicationDirPath() + SettingsFile;
-    QSettings settings(settingsPath, QSettings::NativeFormat);
-    qDebug() << "childGroups " << settings.childKeys();
+    QSettings settings(settingsPath, QSettings::IniFormat);
+
     QVariant value;
-    value = settings.value("presets/list", QVariant(QStringList()));
-    QStringList presetNames = value.toStringList();
+    QStringList presetNames = settings.childGroups();
 
     bool ok = presetNames.size() > 0;
     if (!ok) {
+        qDebug() << "size " << presetNames.size();
         return LoadSettingsDefault();
     }
 
     std::map<QString, Model::Preset> presets;
     for (const QString &name : presetNames) {
         Model::Preset preset;
-        value = settings.value("presets/" + name + "/Eg", QVariant(0.0));
+        value = settings.value(name + "/Eg", QVariant(0.0));
         preset.Eg = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/me", QVariant(0.0));
+        value = settings.value(name + "/me", QVariant(0.0));
         preset.me = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/mh", QVariant(0.0));
+        value = settings.value(name + "/mh", QVariant(0.0));
         preset.mh = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/ae", QVariant(0.0));
+        value = settings.value(name + "/ae", QVariant(0.0));
         preset.ae = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/be", QVariant(0.0));
+        value = settings.value(name + "/be", QVariant(0.0));
         preset.be = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/ah", QVariant(0.0));
+        value = settings.value(name + "/ah", QVariant(0.0));
         preset.ah = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
         }
-        value = settings.value("presets/" + name + "/bh", QVariant(0.0));
+        value = settings.value(name + "/bh", QVariant(0.0));
         preset.bh = value.toDouble(&ok);
         if (!ok) {
             return LoadSettingsDefault();
@@ -81,6 +81,7 @@ void Controller::LoadSettings()
 
         presets[name] = preset;
     }
+
     model.presets = presets;
     model.LoadPreset(presetNames[0]);
 }
@@ -88,21 +89,18 @@ void Controller::LoadSettings()
 void Controller::SaveSettings()
 {
     QString settingsPath = QApplication::applicationDirPath() + SettingsFile;
-    QSettings settings(settingsPath, QSettings::NativeFormat);
+    QSettings settings(settingsPath, QSettings::IniFormat);
+    qDebug() << settings.status();
+    qDebug() << settings.fileName();
 
-    QStringList list;
     for (const auto &kv : model.presets) {
-        list.push_back(kv.first);
-    }
-    settings.setValue("presets/list", list);
-    for (const auto &kv : model.presets) {
-        settings.setValue("presets/" + kv.first+ "/Eg", kv.second.Eg);
-        settings.setValue("presets/" + kv.first+ "/me", kv.second.me);
-        settings.setValue("presets/" + kv.first+ "/mh", kv.second.mh);
-        settings.setValue("presets/" + kv.first+ "/ae", kv.second.ae);
-        settings.setValue("presets/" + kv.first+ "/be", kv.second.be);
-        settings.setValue("presets/" + kv.first+ "/ah", kv.second.ah);
-        settings.setValue("presets/" + kv.first+ "/bh", kv.second.bh);
+        settings.setValue(kv.first+ "/Eg", kv.second.Eg);
+        settings.setValue(kv.first+ "/me", kv.second.me);
+        settings.setValue(kv.first+ "/mh", kv.second.mh);
+        settings.setValue(kv.first+ "/ae", kv.second.ae);
+        settings.setValue(kv.first+ "/be", kv.second.be);
+        settings.setValue(kv.first+ "/ah", kv.second.ah);
+        settings.setValue(kv.first+ "/bh", kv.second.bh);
     }
 }
 
@@ -116,7 +114,7 @@ bool Controller::SaveToASCII(std::ostream &os)
     return model.Serialize(os);
 }
 
-static double GetMue(double a, double b, double T, double NdPlus, double NaMinus) {
+static double GetMu(double a, double b, double T, double NdPlus, double NaMinus) {
     double Tp = pow(T, 1.5);
     return a / (Tp + b * (NdPlus + NaMinus) / Tp);
 }
@@ -126,11 +124,11 @@ bool Controller::LoadMobility()
 {
     model.mue.resize(model.T.size());
     model.muh.resize(model.T.size());
-    constexpr const double a = 1e6;
-    constexpr const double b = 1e-7;
+
+    Model::Preset preset = model.presets[model.currentPreset];
     for (size_t i = 0; i < model.T.size(); ++i) {
-        model.mue[i] = GetMue(a, b, model.T[i], model.NdPlus[i], model.NaMinus[i]);
-        model.muh[i] = model.mue[i];
+        model.mue[i] = GetMu(preset.ae, preset.be, model.T[i], model.NdPlus[i], model.NaMinus[i]);
+        model.muh[i] = GetMu(preset.ah, preset.bh, model.T[i], model.NdPlus[i], model.NaMinus[i]);
     }
     return true;
 //    QByteArray mobility;
@@ -271,6 +269,7 @@ bool Controller::CallMobility(QStringList args, QByteArray &data)
 
 void Controller::LoadSettingsDefault()
 {
+    qDebug() << "LoadSettingsDefault";
     model.presets["Ge"] = {0.661, 0.22, 0.34, 2.33063e7, 6.63994, 1.5116e7, 3.42064};
     model.presets["Si"] = {1.12, 1.08, 0.56, 9.80389e6, 7.55398, 5.58920e6, 7.21393};
     model.LoadPreset("Ge");

@@ -69,7 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QStringList materials = Controller::GetInstance().GetAllMaterials();
     ui->material->clear();
-    qDebug() << "-------------" << materials.size();
     for (const QString &name : materials) {
         ui->material->addItem(name);
     }
