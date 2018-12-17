@@ -156,10 +156,10 @@ void MainWindow::updateChart()
         y_log->setLabelFormat("%.1g");
 //        y_log->setMinorTickCount(-1);
 
-        if (y_min < 1e-100) y_min = 1e-100;
         y_log->setRange(y_min, y_max);
 
         y = y_log;
+        y->setGridLineVisible(false);
     } else {
         QValueAxis *y_value = new QValueAxis;
 
@@ -210,7 +210,9 @@ void MainWindow::updateData()
         assert(datum->size() == temperature.size());
         QLineSeries *series = new QLineSeries(chart);
         for (size_t i = 0; i < temperature.size(); ++i) {
-            series->append(temperature[i], datum->at(i));
+            double v = datum->at(i);
+//            if (v < 1e-20) v = 1e-20;
+            series->append(temperature[i], v);
         }
         series->setColor(QColor(0, 0, 255));
         series->setName(titles[i]);

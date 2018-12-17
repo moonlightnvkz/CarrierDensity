@@ -1,3 +1,4 @@
+#include <QtDebug>
 #include "doublevalidator.h"
 
 DoubleValidator::DoubleValidator(double bottom, double top, int decimals, QObject * parent)
@@ -24,8 +25,19 @@ QValidator::State DoubleValidator::validate(QString &s, int &) const {
         }
     }
 
+    s.remove(locale().groupSeparator());
+
     bool ok;
     double d = locale().toDouble(s, &ok);
+    qDebug() << ok << " " << s << " " << d;
+
+    bool meet_e = false;
+    for (QChar c : s) {
+        if (c == 'e') {
+            if (meet_e) return QValidator::Invalid;
+            meet_e = true;
+        }
+    }
 
     if (notation() == ScientificNotation && s.back() == 'e') {
         return QValidator::Intermediate;

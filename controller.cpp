@@ -95,7 +95,7 @@ void Controller::UpdateT(double from, double to)
 {
     model.T.clear();
     double dt = (to - from) / Model::TCount;
-    for (double t = from; t < to; t += dt) {
+    for (double t = from; t < to + dt; t += dt) {
         model.T.push_back(t);
     }
 
