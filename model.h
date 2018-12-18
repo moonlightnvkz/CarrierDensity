@@ -47,10 +47,6 @@ struct Model {
     bool Serialize(QTextStream &os) const;
 
     bool Deserialize(QTextStream &is);
-
-    void LoadPreset(QString preset);
-
-    bool LoadMobility(std::istream &is);
 };
 
 #endif // MODEL_H

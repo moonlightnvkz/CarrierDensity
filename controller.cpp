@@ -83,7 +83,7 @@ void Controller::LoadSettings()
     }
 
     model.presets = presets;
-    model.LoadPreset(presetNames[0]);
+    model.currentPreset = presetNames[0];
 }
 
 void Controller::SaveSettings()
@@ -184,7 +184,7 @@ void Controller::UpdateT(double from, double to)
 
 void Controller::UpdateMaterial(const QString &name)
 {
-    model.LoadPreset(name);
+    model.currentPreset = name;
     Recalculate();
 }
 
@@ -272,7 +272,7 @@ void Controller::LoadSettingsDefault()
     qDebug() << "LoadSettingsDefault";
     model.presets["Ge"] = {0.661, 0.22, 0.34, 2.33063e7, 6.63994, 1.5116e7, 3.42064};
     model.presets["Si"] = {1.12, 1.08, 0.56, 9.80389e6, 7.55398, 5.58920e6, 7.21393};
-    model.LoadPreset("Ge");
+    model.currentPreset = "Ge";
     SaveSettings();
 }
 

@@ -1,0 +1,153 @@
+\documentclass[12pt,a4paper]{extarticle}
+\usepackage[top=2cm, bottom=2cm, left=3cm, right=1.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{indentfirst}
+
+\usepackage[nottoc, numbib]{tocbibind} % Библиография в содержании (+numbib for numeration)
+
+\usepackage{floatrow}
+
+\usepackage[tableposition=top]{caption}
+\usepackage{subcaption}
+\usepackage{floatrow}
+\floatsetup[table]{capposition=top}
+\usepackage{graphicx}
+\graphicspath{./graphics/}
+\usepackage{float}
+\usepackage{wrapfig}
+
+%%%% Установки для размера шрифта 14 pt %%%%
+%% Формирование переменных и констант для сравнения (один раз для всех подключаемых файлов)%%
+%% должно располагаться до вызова пакета fontspec или polyglossia, потому что они сбивают его работу
+\newlength{\curtextsize}
+\newlength{\bigtextsize}
+\setlength{\bigtextsize}{13.9pt}
+
+\usepackage{polyglossia}
+\usepackage{fontspec}
+
+\setmainlanguage[babelshorthands=true]{russian}
+\setotherlanguage{english}
+\setotherlanguage{greek}
+
+\defaultfontfeatures{Ligatures={TeX},Renderer=Basic}
+\setmainfont{Noto Serif} %% задаёт основной шрифт документа
+\setsansfont{Noto Serif} %% задаёт шрифт без засечек
+\setmonofont{Noto Serif} %% задаёт моноширинный шрифт
+
+\defaultfontfeatures{Ligatures=TeX,Mapping=tex-text,Renderer=Basic}
+\defaultfontfeatures{Ligatures=TeX}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{setspace}
+\onehalfspacing%
+\usepackage{tabularx}
+\usepackage[table,xcdraw]{xcolor}
+
+\newcommand{\header}{\fontsize{14pt}{21pt}\bf}
+\newcommand{\headerl}{\fontsize{12pt}{18pt}\bf}
+
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cfttoctitlefont}{\header}
+\renewcommand{\cftpartfont}{\normalfont}
+\renewcommand{\cftsecfont}{\normalfont}
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftpartfont}{\normalfont}
+\setlength{\cftbeforesecskip}{1pt}
+
+\usepackage{fancyhdr} % пакет для установки колонтитулов
+\pagestyle{fancy} % смена стиля оформления страниц
+\fancyhf{} % очистка текущих значений
+\fancyhead[R]{\thepage} % установка верхнего колонтитула
+%\fancyfoot[R]{\thepage}	% установка нижнего колонтитула
+\renewcommand{\headrulewidth}{0bp} % убрать разделительную линию
+
+\pretolerance=5000
+\tolerance=9000
+\emergencystretch=0pt
+\righthyphenmin=4
+\lefthyphenmin=4
+%----------------------
+%	\renewcommand\large{\@setfontsize\large{14}{21}}
+%	\renewcommand\Large{\@setfontsize\Large{14}{14}}
+
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+	{-3.5ex \@plus -1ex \@minus -.2ex}%
+	{1.1ex \@plus.2ex}%
+	{\normalfont\normalfont\bfseries}}% from \Large
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+	{-3.25ex\@plus -1ex \@minus -.2ex}%
+	{1.1ex \@plus .2ex}%
+	{\normalfont\normalfont\bfseries}}% from \large
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+	{-3.25ex\@plus -1ex \@minus -.2ex}%
+	{1.1ex \@plus .2ex}%
+	{\normalfont\normalfont\bfseries}}% from \normalsize
+\makeatother
+
+\captionsetup{font=small, format=plain, labelsep=period, singlelinecheck=off,
+	justification=centering}
+
+\parindent=0.5cm
+\makeatletter
+\renewcommand\@biblabel[1]{#1.}
+\makeatother
+
+\let\OLDthebibliography\thebibliography\renewcommand\thebibliography[1]{
+	\OLDthebibliography{#1}
+	\setlength{\parskip}{0pt}
+	\setlength{\itemsep}{0pt plus 0.3ex}
+}
+
+\makeatletter
+\renewcommand{\paragraph}{%
+	\@startsection{paragraph}{4}%
+	{\z@}{1ex \@plus 1ex \@minus .2ex}{-1em}%
+	{\normalfont\normalsize\bfseries}%
+}
+\makeatother
+
+
+\title{Описание программы расчета удельной проводимости полупроводников}
+\date{18 декабря 2018 г.}
+
+\begin{document}
+
+\maketitle
+
+\section{Пользовательский интерфейс}
+Программа представляет из себя окно графиком и набором элементов для задания материала и ввода пользовательских данных: уровня энергии доноров \textit{Ed}, концентрации доноров \textit{Nd0}, уровня энергии акцепторов \textit{Ea}, концентрации акцепторов \textit{Na0} и диапазона температуры \textit{T}. Размерность вводимых данных указана непосредственно около поля ввода.
+
+В программе предусмотрена возможность построения графиков зависимости различных величин от температуры: концентрация электронов, концентрация дырок, концентрация заряженных доноров, концентрация заряженных акцепторов, подвижность электронов, подвижность дырок, удельная проводимость.
+
+Переключение между отображаемыми графиками осуществляется путем выбора соответствующего пункта в меню \textit{"Вид"}.
+
+В меню \textit{"Вид"} также присутствует возможность установки отображения графиков в логарифмическом масштабе по оси Y.
+
+Сохранить и загрузить ранее сохраненные графики можно при помощи соответствующих пунктов меню \textit{"Файл"}.
+
+\section{Формат данных}
+Все энергии измеряются от потолка валентной зоны (в том числе \textit{Ed} и \textit{Ea}). Размерности указаны в подписях к осям и полям ввода данных.
+
+Пользовательские данные задаются экспоненциальной записью: число представляется в виде мантиссы и экспоненты с указанием знака последней, разделенных английской буквой \textit{e}. Например, $1,6e+19 = 1,6 \cdot 10^{19}$
+
+\section{Описание формата сохранения}
+Все графики сохраняются в текстовом виде. В начале файла находится заголовок с внутренними параметрами и параметрами, введенными пользователем.
+
+В заголовке содержаться следующие параметры (соответственно): ширина запрещенной зоны; эффективная масса электронов; эффективная масса дырок; 2 константы, необходимые для вычисления подвижности электронов; 2 константы, необходимые для вычисления подвижности электронов; уровень энергии доноров; концентрация доноров; уровен энергии акцепторов: концентрация акцепторов; название материала.
+
+После заголовка следуют 7 колонок с данными графиков: температура, подвижность электронов, подвижность дырок, концентрация заряженных доноров, концентрация заряженных акцепторов, концентрация электронов, концентрация дырок, удельная проводимость.
+
+\section{Известные ошибки и особенности работы}
+При наличии в данных отрицательных или равных нулю величин, график в логарифмическом масштабе не строится.
+
+Иногда при попытке стереть введенные пользователем данные путем нажатия клавиши \textit{Backspace} удаление не происходит (при попытке стереть степень экспоненты). В такие моменты следует выделить все данные в текущем поле, стереть их и набрать заного.
+
+
+\end{document}

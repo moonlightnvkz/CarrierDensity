@@ -98,3 +98,5 @@ rcc*
 *.jpg
 
 release/*
+doc/*
+!doc/*.tex
