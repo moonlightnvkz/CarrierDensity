@@ -232,10 +232,17 @@ void MainWindow::updateData()
 void MainWindow::on_action_ASCII_2_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Загрузить из ASCII"), "./", tr("Text files (*.txt)"));
-    if (filename.size() == 0) {
+    if (filename.isEmpty()) {
         return;
     }
-    std::ifstream is(filename.toStdString());
+
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(this, tr("Не удалось открыть файл"), file.errorString());
+        return;
+    }
+
+    QTextStream is(&file);
 
     if (Controller::GetInstance().LoadFromASCII(is)) {
         updateData();
@@ -253,7 +260,14 @@ void MainWindow::on_action_ASCII_triggered()
     if (filename.size() == 0) {
         return;
     }
-    std::ofstream os(filename.toStdString());
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::information(this, tr("Не удалось открыть файл"), file.errorString());
+        return;
+    }
+
+    QTextStream os(&file);
+
     if (!Controller::GetInstance().SaveToASCII(os)) {
         QMessageBox msgBox;
         msgBox.setText("Не удалось сохранить ASII файл :(");

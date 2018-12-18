@@ -104,12 +104,12 @@ void Controller::SaveSettings()
     }
 }
 
-bool Controller::LoadFromASCII(std::istream &is)
+bool Controller::LoadFromASCII(QTextStream &is)
 {
     return model.Deserialize(is);
 }
 
-bool Controller::SaveToASCII(std::ostream &os)
+bool Controller::SaveToASCII(QTextStream &os)
 {
     return model.Serialize(os);
 }

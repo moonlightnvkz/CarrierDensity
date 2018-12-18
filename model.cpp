@@ -6,11 +6,11 @@
 
 Model::Model() { }
 
-bool Model::Serialize(std::ostream &os) const
+bool Model::Serialize(QTextStream &os) const
 {
     const Preset &pr = presets.at(currentPreset);
     os << pr.Eg << " " << pr.me << " " << pr.mh << " " << pr.ae << " " << pr.be << " " << pr.ah << " " << pr.bh
-       << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << " " << currentPreset.toStdString() << std::endl;
+       << " " << Ed << " " << Nd0 << " " << Ea << " " << Na0 << " " << currentPreset << "\n";
 
     for (size_t i = 0; i < T.size(); ++i) {
         double T_ = T[i];
@@ -22,24 +22,24 @@ bool Model::Serialize(std::ostream &os) const
         double p_ = Elvis(p, i, 0.0);
         double sigma_ = Elvis(sigma, i, 0.0);
         os << T_ << "\t" <<  mue_ << "\t" << muh_ << "\t" << Nc_ << "\t"
-           << Nv_ << "\t" << n_ << "\t" << p_ << "\t" << sigma_ << std::endl;
+           << Nv_ << "\t" << n_ << "\t" << p_ << "\t" << sigma_ << "\n";
     }
-    return os.good();
+    return os.status() == QTextStream::Status::Ok;
 }
 
-bool Model::Deserialize(std::istream &is)
+bool Model::Deserialize(QTextStream &is)
 {
-    std::string preset_;
+    QString preset_;
     double Eg, me, mh, ae, be, ah, bh;
     is >> Eg  >> me >> mh >> ae >> be >> ah >> bh >> Ed >> Nd0 >> Ea >> Na0 >> preset_;
 
-    currentPreset.fromStdString(preset_);
+    currentPreset = preset_;
     presets[currentPreset] = {Eg, me, mh, ae, be, ah, bh};
 
     for (size_t i = 0; i < T.size(); ++i) {
         is >> T[i] >> mue[i] >> muh[i] >> Nc[i] >> Nv[i] >> n[i] >> p[i] >> sigma[i];
     }
-    return is.good();
+    return is.status() == QTextStream::Status::Ok;;
 }
 
 //https://ru.wikipedia.org/wiki/%D0%AD%D1%84%D1%84%D0%B5%D0%BA%D1%82%D0%B8%D0%B2%D0%BD%D0%B0%D1%8F_%D0%BC%D0%B0%D1%81%D1%81%D0%B0

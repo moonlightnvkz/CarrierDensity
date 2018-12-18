@@ -41,6 +41,12 @@ QValidator::State DoubleValidator::validate(QString &s, int &) const {
     if (notation() == ScientificNotation && s.back() == 'e') {
         return QValidator::Intermediate;
     }
+    if (notation() == ScientificNotation && s.back() == '-' && (s.size() == 1 || s[s.size()-2] == 'e')) {
+        return QValidator::Intermediate;
+    }
+    if (notation() == ScientificNotation && s.back() == '+' && (s.size() == 1 || s[s.size()-2] == 'e')) {
+        return QValidator::Intermediate;
+    }
     if (ok && d >= bottom() && d <= top()) {
         return QValidator::Acceptable;
     }

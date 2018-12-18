@@ -1,6 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 #include <QStringList>
+#include <QTextStream>
 #include <map>
 #include <vector>
 #include <iosfwd>
@@ -43,9 +44,9 @@ struct Model {
 
     Model();
 
-    bool Serialize(std::ostream &os) const;
+    bool Serialize(QTextStream &os) const;
 
-    bool Deserialize(std::istream &is);
+    bool Deserialize(QTextStream &is);
 
     void LoadPreset(QString preset);
 

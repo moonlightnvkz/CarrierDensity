@@ -1,7 +1,6 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 #include <memory>
-#include <iosfwd>
 #include <QStringList>
 #include "model.h"
 
@@ -16,9 +15,9 @@ public:
 
     void SaveSettings();
 
-    bool LoadFromASCII(std::istream &is);
+    bool LoadFromASCII(QTextStream &is);
 
-    bool SaveToASCII(std::ostream &os);
+    bool SaveToASCII(QTextStream &os);
 
     bool LoadMobility();
 
